@@ -1,4 +1,5 @@
 from pymongo import MongoClient, DESCENDING
+import csv
 
 db_uri = 'mongodb://127.0.0.1:27017/'
 database = MongoClient(db_uri)
@@ -29,3 +30,23 @@ def add_visiteur(donnée: dict):
 def delete_all():
     result = db.visiteurs.delete_many({})
     return result.deleted_count
+
+def trier_visiteurs(donnee: dict):
+    #les 3 ligne serve a renvoyer uniquement les collones a afficher donner dans le dictionnaire
+    affichage = dict()
+    for key in donnee.keys():
+        affichage[key] = 1
+
+    visiteurs = list(db.visiteurs.find(donnee,affichage))
+    return visiteurs
+
+def fichier_csv(donnee: dict):
+    with open('visiteurs.csv', 'w', newline='') as csvfile:
+        fieldnames = donnee.keys() #permet de mettre les attribut en haut du fichier csv
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        writer.writeheader()
+        visiteurs = trier_visiteurs(donnee)
+        for visiteur in visiteurs:
+            writer.writerow(visiteur)
+

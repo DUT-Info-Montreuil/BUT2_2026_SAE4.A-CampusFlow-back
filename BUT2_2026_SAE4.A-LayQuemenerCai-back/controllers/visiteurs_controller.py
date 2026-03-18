@@ -37,3 +37,8 @@ def delete_visiteurs():
         return jsonify(f"{count} visiteurs ont été supprimés de la base de données"), 204
     else:
         return jsonify("Suppression des visiteurs échoué"), 404
+
+@visiteurs_controller.route('/export', methods=['GET'])
+def export_visiteurs():
+    data = request.get_json()
+    return service_visiteurs.export_visiteurs(data),200
