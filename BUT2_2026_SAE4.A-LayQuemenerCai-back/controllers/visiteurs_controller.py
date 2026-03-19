@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request, Response
+from flask import Blueprint, jsonify, request
 import services.visiteurs_service as service_visiteurs
 
 visiteurs_controller = Blueprint('visiteurs', __name__, url_prefix='/visiteurs')
@@ -38,7 +38,8 @@ def delete_visiteurs():
     else:
         return jsonify("Suppression des visiteurs échoué"), 404
 
-@visiteurs_controller.route('/export', methods=['GET'])
+@visiteurs_controller.route('/export', methods=['POST'])
 def export_visiteurs():
     data = request.get_json()
-    return service_visiteurs.export_visiteurs(data),200
+    csv=service_visiteurs.fichier_csv(data)
+    return jsonify(),200
