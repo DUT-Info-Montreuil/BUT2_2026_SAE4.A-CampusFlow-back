@@ -33,9 +33,8 @@ def delete_all():
 
 
 def trier_visiteurs(donnee: dict):
-    visiteurs = list(db.visiteurs.find(donnee,{"_id": 1,"nom":1,"prenom":1})) #affichage à modifier
+    visiteurs = list(db.visiteurs.find(donnee, {"_id": 1, "nom": 1, "prenom": 1}))  # affichage à modifier
     return visiteurs
-
 
 def fichier_csv(donnee: dict):
     with open('temporaire/visiteurs.csv', 'w', newline='') as csvfile:
