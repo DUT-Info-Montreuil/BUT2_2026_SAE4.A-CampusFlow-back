@@ -31,16 +31,15 @@ def delete_all():
     result = db.visiteurs.delete_many({})
     return result.deleted_count
 
-def trier_visiteurs(donnee: dict):
-    #les 3 ligne servent a renvoyer uniquement les collones a afficher donner dans le dictionnaire
 
-    visiteurs = list(db.visiteurs.find(donnee))
-    print(visiteurs)
+def trier_visiteurs(donnee: dict):
+    visiteurs = list(db.visiteurs.find(donnee,{"_id": 1,"nom":1,"prenom":1})) #affichage à modifier
     return visiteurs
 
+
 def fichier_csv(donnee: dict):
-    with open('visiteurs.csv', 'w', newline='') as csvfile:
-        fieldnames = ["_id","nom","prenom"] #permet de mettre les attribut en haut du fichier csv
+    with open('temporaire/visiteurs.csv', 'w', newline='') as csvfile:
+        fieldnames = ["_id", "nom", "prenom"]  # permet de mettre les attribut en haut du fichier csv
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
         writer.writeheader()
@@ -48,4 +47,3 @@ def fichier_csv(donnee: dict):
         for visiteur in visiteurs:
             writer.writerow(visiteur)
     csvfile.close()
-
