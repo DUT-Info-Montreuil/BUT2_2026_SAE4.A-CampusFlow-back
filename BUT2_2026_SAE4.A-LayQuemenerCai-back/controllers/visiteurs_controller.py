@@ -35,3 +35,22 @@ def delete_visiteurs():
         return jsonify(f"{count} visiteurs ont été supprimés de la base de données"), 204
     else:
         return jsonify("Suppression des visiteurs échoué"), 404
+
+
+@visiteurs_controller.route('/<int:id_visiteur>', methods=['DELETE'])
+def delete_visiteur_by_id(id_visiteur: int):
+    name = service_visiteurs.delete_visiteur_by_id(id_visiteur)
+    if name is not None:
+        return jsonify(f"Le visiteur {name} a été supprimé avec succès"), 204
+    else:
+        return jsonify("Suppression des visiteurs échoué"), 404
+
+
+@visiteurs_controller.route('/<int:id_visiteur>', methods=['PUT'])
+def modif_visiteurs(id_visiteur: int):
+    data = request.get_json()
+    try:
+        service_visiteurs.modif_visiteur(id_visiteur, data)
+        return jsonify("Visiteur modifié"), 201
+    except Exception as exception:
+        return jsonify(f"{exception}"), 404
