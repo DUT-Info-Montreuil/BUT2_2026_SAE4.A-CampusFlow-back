@@ -1,6 +1,5 @@
 from flask import Blueprint, jsonify, request, Response
 import services.visiteurs_service as service_visiteurs
-from dtos.CreerVisiteursDTO import VisiteurCreerDTO
 
 visiteurs_controller = Blueprint('visiteurs', __name__, url_prefix='/visiteurs')
 
@@ -18,7 +17,7 @@ def add_visiteurs():
         service_visiteurs.add_visiteur(data)
         return jsonify("Visiteur ajouté"), 201
     except Exception as exception:
-        return jsonify("Erreur d'ajout "), 404
+        return jsonify(f"{exception}"), 404
 
 
 @visiteurs_controller.route('', methods=['DELETE'])

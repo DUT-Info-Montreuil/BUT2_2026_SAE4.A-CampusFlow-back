@@ -14,6 +14,10 @@ class AdresseDTO(BaseModel):
     codePostal: int
 
 
+class LyceeDTO(BaseModel):
+    nom_lycee: str
+    codePostal: int
+
 class OptionsDTO(BaseModel):
     handicap: bool = False
     reorientation: bool = False
@@ -26,17 +30,24 @@ class FormationActuelleDTO(BaseModel):
 
 
 class FormationViseeDTO(BaseModel):
-        intitule: str = Field(min_length=2)
-        niveau_etudes: str = Field(min_length=5)
+    intitule: str = Field(min_length=2)
+    niveau_etudes: str = Field(min_length=5)
 
 
 class VisiteurCreerDTO(BaseModel):
-        nom: str = Field(min_length=2)
-        prenom: str = Field(min_length=2)
-        date_naissance: datetime
-        bac: BacDTO
-        adresse: AdresseDTO
-        email: str | None = None
-        telephone: str = Field(min_length=10, max_length=10, default=None)
-        options: OptionsDTO | None = None
-        formation_actuelle: FormationActuelleDTO | None = None
+    nom: str = Field(min_length=2)
+    prenom: str = Field(min_length=2)
+    date_naissance: datetime
+    bac: BacDTO
+    lycee: LyceeDTO
+    adresse: AdresseDTO
+    email: str | None = None
+    telephone: str | None = None
+    options: OptionsDTO | None = None
+    formation_actuelle: FormationActuelleDTO | None = None
+
+    @field_validator('telephone')
+    def validate_telephone(telephone):
+        if telephone is not None and len(telephone) != 10:
+            raise ValueError('Le téléphone doit contenir exactement 10 chiffres')
+        return telephone

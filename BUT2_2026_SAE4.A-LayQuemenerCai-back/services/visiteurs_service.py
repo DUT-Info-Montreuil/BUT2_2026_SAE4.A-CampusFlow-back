@@ -1,43 +1,82 @@
-from pymongo import DESCENDING
-from database import db
-from dtos.CreerVisiteursDTO import VisiteurCreerDTO, BacDTO, AdresseDTO, OptionsDTO
+from database import get_db
+from dtos.CreerVisiteursDTO import VisiteurCreerDTO, BacDTO, LyceeDTO, AdresseDTO, OptionsDTO, FormationActuelleDTO
 from dtos.GetVisiteursDTO import VisiteurShortDictDTO, VisiteurLongDictDTO
 
 
-def get_next_id() -> int:
-    dernier = db.visiteurs.find_one({}, {"_id": 1}, sort=[("_id", DESCENDING)])
-    return (dernier['_id'] + 1) if dernier is not None else 0
-
-
 def get_all():
-    visiteurs = list(db.visiteurs.find())
+    db = get_db()
+    cursor = db.execute("SELECT * FROM visiteurs")
+    visiteurs = cursor.fetchall()
     result = []
     for visiteur in visiteurs:
+        bac = {
+            "intitule": visiteur["bac_intitule"],
+            "annee": visiteur["bac_annee"],
+            "matiere1": visiteur["bac_matiere1"],
+            "matiere2": visiteur["bac_matiere2"]
+        }
+        adresse = {
+            "ville": visiteur["ville"],
+            "codePostal": visiteur["code_postal"]
+        }
         visiteur_short = VisiteurShortDictDTO(
-            id=visiteur['_id'],
-            nom=visiteur['nom'],
-            prenom=visiteur['prenom'],
-            bac=visiteur['bac'],
-            ville=visiteur['adresse']['ville']
+            id=visiteur["id"],
+            nom=visiteur["nom"],
+            prenom=visiteur["prenom"],
+            bac=bac,
+            adresse=adresse
         )
         result.append(visiteur_short.model_dump(exclude_none=True))
     return result
 
 
 def get_visiteur_by_id(visiteur_id: int):
-    visiteur = db.visiteurs.find_one({"_id": visiteur_id})
-    if visiteur is None:
+    db = get_db()
+    cursor = db.execute("SELECT * FROM visiteurs WHERE id=?", (visiteur_id,))
+    visiteur = cursor.fetchone()
+    if not visiteur:
         return None
+
+    bac = {
+        "intitule": visiteur["bac_intitule"],
+        "annee": visiteur["bac_annee"],
+        "matiere1": visiteur["bac_matiere1"],
+        "matiere2": visiteur["bac_matiere2"]
+    }
+    adresse = {
+        "ville": visiteur["ville"],
+        "codePostal": visiteur["code_postal"]
+    }
+    lycee = {
+        "nom_lycee": visiteur["nom_lycee"],
+        "codePostal": visiteur["code_postal_lycee"]
+    }
+    options = None
+    if visiteur["handicap"] or visiteur["reorientation"] or visiteur["immersion"]:
+        options = OptionsDTO(
+            handicap=bool(visiteur["handicap"]),
+            reorientation=bool(visiteur["reorientation"]),
+            immersion=bool(visiteur["immersion"])
+        )
+
+    formation_actuelle = None
+    if visiteur["formation_actuelle_intitule"] and visiteur["formation_actuelle_niveau"]:
+        formation_actuelle = FormationActuelleDTO(
+            intitule=visiteur["formation_actuelle_intitule"],
+            niveau_etudes=visiteur["formation_actuelle_niveau"]
+        )
+
     visiteur_long = VisiteurLongDictDTO(
-        id=visiteur['_id'],
-        nom=visiteur['nom'],
-        prenom=visiteur['prenom'],
-        bac=visiteur['bac'],
-        adresse=visiteur['adresse'],
-        options=visiteur.get('options'),
-        email=visiteur.get('email'),
-        telephone=visiteur.get('telephone'),
-        formation_actuelle=visiteur.get('formation_actuelle')
+        id=visiteur["id"],
+        nom=visiteur["nom"],
+        prenom=visiteur["prenom"],
+        bac=bac,
+        lycee=lycee,
+        adresse=adresse,
+        options=options,
+        email=visiteur["email"],
+        telephone=visiteur["telephone"],
+        formation_actuelle=formation_actuelle
     )
     return visiteur_long.model_dump(exclude_none=True)
 
@@ -64,34 +103,78 @@ def add_visiteur(data: dict):
         )
 
     formation_actuelle = None
-    if "formation_intitule" in data and "formation_niveau_etudes" in data:
+    if "formation_actuelle_intitule" in data and "formation_actuelle_niveau" in data:
         formation_actuelle = FormationActuelleDTO(
-            intitule=data["formation_intitule"],
-            niveau_etudes=data["formation_niveau_etudes"]
+            intitule=data["formation_actuelle_intitule"],
+            niveau_etudes=data["formation_actuelle_niveau"]
         )
+
+    lycee = LyceeDTO(
+        nom_lycee=data["nom_lycee"],
+        codePostal=int(data["code_postal_lycee"])
+    )
 
     visiteur = VisiteurCreerDTO(
         nom=data["nom"],
         prenom=data["prenom"],
         date_naissance=data["date_naissance"],
         bac=bac,
-        adresse=adresse
+        lycee=lycee,
+        adresse=adresse,
+        email=data.get("email"),
+        telephone=data.get("telephone"),
+        options=options,
+        formation_actuelle=formation_actuelle
     )
 
-    if "email" in data:
-        visiteur.email = data["email"]
-    if "telephone" in data:
-        visiteur.telephone = data["telephone"]
-    if options:
-        visiteur.options = options
-    if formation_actuelle:
-        visiteur.formation_actuelle = formation_actuelle
+    if visiteur.formation_actuelle:
+        formation_intitule = visiteur.formation_actuelle.intitule
+        formation_niveau = visiteur.formation_actuelle.niveau
+    else:
+        formation_intitule = None
+        formation_niveau = None
 
-    document = visiteur.model_dump(exclude_none=True)
-    document['_id'] = get_next_id()
-    db.visiteurs.insert_one(document)
+    if visiteur.options:
+        handicap = int(visiteur.options.handicap)
+        reorientation = int(visiteur.options.reorientation)
+        immersion = int(visiteur.options.immersion)
+    else:
+        handicap = 0
+        reorientation = 0
+        immersion = 0
+
+    db = get_db()
+    db.execute("""
+        INSERT INTO visiteurs (
+            nom, prenom, email, telephone, date_de_naissance, ville, code_postal,
+            nom_lycee, code_postal_lycee, bac_intitule, bac_annee, bac_matiere1, bac_matiere2,
+            formation_actuelle_intitule, formation_actuelle_niveau, handicap, reorientation, immersion
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        visiteur.nom,
+        visiteur.prenom,
+        visiteur.email,
+        visiteur.telephone,
+        str(visiteur.date_naissance),
+        visiteur.adresse.ville,
+        visiteur.adresse.codePostal,
+        visiteur.lycee.nom_lycee,
+        visiteur.lycee.codePostal,
+        visiteur.bac.intitule,
+        visiteur.bac.annee,
+        visiteur.bac.matiere1,
+        visiteur.bac.matiere2,
+        formation_intitule,
+        formation_niveau,
+        handicap,
+        reorientation,
+        immersion
+    ))
+    db.commit()
 
 
 def delete_all():
-    result = db.visiteurs.delete_many({})
-    return result.deleted_count
+    db = get_db()
+    cursor = db.execute("DELETE FROM visiteurs")
+    db.commit()
+    return cursor.rowcount

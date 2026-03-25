@@ -13,6 +13,11 @@ class AdresseDTO(BaseModel):
     codePostal: int
 
 
+class LyceeDTO(BaseModel):
+    nomLycee: str
+    codePostal: int
+
+
 class OptionsDTO(BaseModel):
     handicap: bool = False
     reorientation: bool = False
@@ -25,23 +30,24 @@ class FormationActuelleDTO(BaseModel):
 
 
 class FormationViseeDTO(BaseModel):
-        intitule: str = Field(min_length=2)
-        niveau_etudes: str = Field(min_length=5)
+    intitule: str = Field(min_length=2)
+    niveau_etudes: str = Field(min_length=5)
 
 
-class VisiteurShortDictDTO(BaseModel): # Utilisé pour l'endpoint GET /visiteurs
+class VisiteurShortDictDTO(BaseModel):  # Utilisé pour l'endpoint GET /visiteurs
     id: int
     nom: str
     prenom: str
     bac: BacDTO
-    ville: str
+    adresse: AdresseDTO
 
 
-class VisiteurLongDictDTO(BaseModel): # Utilisé pour l'endpoint GET /visiteurs/{visiteurID}
+class VisiteurLongDictDTO(BaseModel):  # Utilisé pour l'endpoint GET /visiteurs/{visiteurID}
     id: int
     nom: str
     prenom: str
     bac: BacDTO
+    lycee: LyceeDTO
     adresse: AdresseDTO
     options: OptionsDTO | None = None
     email: str | None = None
