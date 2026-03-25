@@ -14,7 +14,7 @@ class AdresseDTO(BaseModel):
 
 
 class LyceeDTO(BaseModel):
-    nomLycee: str
+    nom_lycee: str
     codePostal: int
 
 
@@ -51,5 +51,5 @@ class VisiteurLongDictDTO(BaseModel):  # Utilisé pour l'endpoint GET /visiteurs
     adresse: AdresseDTO
     options: OptionsDTO | None = None
     email: str | None = None
-    telephone: str = None
+    telephone: str | None = None
     formation_actuelle: FormationActuelleDTO | None = None

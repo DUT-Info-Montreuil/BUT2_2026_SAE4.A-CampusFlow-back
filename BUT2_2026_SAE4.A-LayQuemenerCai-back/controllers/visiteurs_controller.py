@@ -10,6 +10,14 @@ def get_visiteurs():
     return jsonify(visiteurs), 200
 
 
+@visiteurs_controller.route('/<int:id>', methods=['GET'])
+def get_visiteur_by_id(id):
+    visiteur = service_visiteurs.get_visiteur_by_id(id)
+    if visiteur is None:
+        return jsonify("Visiteur introuvable"), 404
+    return jsonify(visiteur), 200
+
+
 @visiteurs_controller.route('', methods=['POST'])
 def add_visiteurs():
     data = request.get_json()
