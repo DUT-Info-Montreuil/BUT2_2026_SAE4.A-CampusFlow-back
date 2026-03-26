@@ -5,6 +5,8 @@ from dtos.GetVisiteursDTO import VisiteurShortDictDTO, VisiteurLongDictDTO
     Cette fonction permet de passer de mapper la section bac issu de la bdd 
     vers la version qui va être retourné au front end
 """
+
+
 def mapper_bac_to_front(visiteur) -> dict:
     return {
         "intitule": visiteur["bac_intitule"],
@@ -13,10 +15,13 @@ def mapper_bac_to_front(visiteur) -> dict:
         "matiere2": visiteur["bac_matiere2"]
     }
 
+
 """
     Cette fonction permet de passer de mapper la section de l'adresse du visiteur 
     issu de la bdd vers la version qui va être retourné au front end
 """
+
+
 def mapper_adresse_to_front(visiteur) -> dict:
     return {
         "ville": visiteur["ville"],
@@ -28,6 +33,8 @@ def mapper_adresse_to_front(visiteur) -> dict:
     Cette fonction permet de passer de mapper la section du lycée du visiteur 
     issu de la bdd vers la version qui va être retourné au front end
 """
+
+
 def mapper_lycee_to_front(visiteur) -> dict:
     return {
         "nom_lycee": visiteur["nom_lycee"],
@@ -39,6 +46,8 @@ def mapper_lycee_to_front(visiteur) -> dict:
     Cette fonction permet de passer de mapper la section liées aux options du visiteurs 
     issu de la bdd vers la version qui va être retourné au front end
 """
+
+
 def mapper_options_to_front(visiteur):
     return OptionsDTO(
         handicap=bool(visiteur["handicap"]),
@@ -52,6 +61,8 @@ def mapper_options_to_front(visiteur):
     du visiteur (si il est en réorientation) issu de la bdd 
     vers la version qui va être retourné au front end
 """
+
+
 def mapper_formation_actuelle_to_front(visiteur):
     if visiteur["formation_actuelle_intitule"] and visiteur["formation_actuelle_niveau"]:
         return FormationActuelleDTO(
@@ -60,10 +71,13 @@ def mapper_formation_actuelle_to_front(visiteur):
         )
     return None
 
+
 """
     Cette fonction permet de passer de mapper les données du visiteur du bdd 
     vers la version qui va être retourné au front end
 """
+
+
 def to_short_dto(visiteur) -> dict:
     return VisiteurShortDictDTO(
         id=visiteur["id"],
@@ -78,6 +92,8 @@ def to_short_dto(visiteur) -> dict:
     Cette fonction permet de passer de mapper les données du visiteur du bdd 
     vers la version qui va être retourné au front end
 """
+
+
 def to_long_dto(visiteur) -> dict:
     return VisiteurLongDictDTO(
         id=visiteur["id"],
@@ -97,6 +113,8 @@ def to_long_dto(visiteur) -> dict:
     Cette fonction permet de passer de mapper les données du visiteur issus du front end 
     vers la version qui va être inséré au bdd
 """
+
+
 def to_visiteur_creer_dto(data: dict) -> VisiteurCreerDTO:
     if "formation_actuelle_intitule" in data and "formation_actuelle_niveau" in data:
         formation_actuelle_attribut = FormationActuelleDTO(

@@ -1,6 +1,4 @@
 from database import get_db
-from dtos.CreerVisiteursDTO import VisiteurCreerDTO, BacDTO, LyceeDTO, AdresseDTO, OptionsDTO, FormationActuelleDTO
-from dtos.GetVisiteursDTO import VisiteurShortDictDTO, VisiteurLongDictDTO
 from mappers.visiteurs_mapper import to_short_dto, to_long_dto, to_visiteur_creer_dto
 
 
@@ -21,7 +19,7 @@ def get_visiteur_by_id(visiteur_id: int):
     if not visiteur:
         return None
     else:
-        return to_short_dto(visiteur)
+        return to_long_dto(visiteur)
 
 
 def add_visiteur(data: dict):
@@ -67,6 +65,6 @@ def add_visiteur(data: dict):
 def delete_all():
     db = get_db()
     cursor = db.execute("DELETE FROM visiteurs")
-    cursor2 = db.execute("DELETE FROM sqlite_sequence where name=?", ('visiteurs',))
+    cursor2 = db.execute("DELETE FROM sqlite_sequence where name=?", ('visiteurs',)) # Reset l'id à 0
     db.commit()
     return cursor.rowcount
