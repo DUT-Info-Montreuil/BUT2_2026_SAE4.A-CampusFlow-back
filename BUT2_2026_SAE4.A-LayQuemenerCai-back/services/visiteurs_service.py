@@ -238,26 +238,26 @@ def modif_visiteur(id_visiteur: int, data: dict):
     db = get_db()
     db.execute("""
         UPDATE visiteurs
-        SET nom= visiteur.nom,
-            prenom= visiteur.prenom,
-            email= visiteur.email,
-            telephone= visiteur.telephone,
-            date_de_naissance= str(visiteur.date_naissance),
-            ville= visiteur.adresse.ville,
-            code_postal= visiteur.adresse.codePostal,
-            nom_lycee= visiteur.lycee.nom_lycee,
-            code_postal_lycee= visiteur.lycee.codePostal,
-            bac_intitule= visiteur.bac.intitule,
-            bac_annee= visiteur.bac.annee,
-            bac_matiere1= visiteur.bac.matiere1,
-            bac_matiere2= visiteur.bac.matiere2,
-            formation_actuelle_intitule= formation_intitule,
-            formation_actuelle_niveau= formation_niveau,
-            handicap= handicap,
-            reorientation= reorientation,
-            immersion= immersion
-        WHERE id=id_visiteur;
-    """,)
+        SET nom= ?,
+            prenom= ?,
+            email= ?,
+            telephone= ?,
+            date_de_naissance= ?,
+            ville= ?,
+            code_postal= ?,
+            nom_lycee= ?,
+            code_postal_lycee= ?,
+            bac_intitule= ?,
+            bac_annee= ?,
+            bac_matiere1= ?,
+            bac_matiere2= ?,
+            formation_actuelle_intitule= ?,
+            formation_actuelle_niveau= ?,
+            handicap= ?,
+            reorientation= ?,
+            immersion= ?,
+        WHERE id=?;
+    """, (visiteur.nom, visiteur.prenom, visiteur.email, visiteur.telephone, str(visiteur.date_naissance), visiteur.adresse.ville, visiteur.adresse.codePostal, visiteur.lycee.nom_lycee, visiteur.lycee.codePostal,visiteur.bac.intitule, visiteur.bac.annee, visiteur.bac.matiere1, visiteur.bac.matiere2, formation_intitule, formation_niveau, handicap, reorientation, immersion, id_visiteur,))
     db.commit()
 
 
@@ -265,10 +265,11 @@ def delete_visiteur_by_id(id_visiteur: int):
     db = get_db()
     name = None
     name = db.execute("SELECT nom FROM visiteurs WHERE id= ?", (id_visiteur,))
+    db.commit()
     nameF = name.fetchone()
     cursor = db.execute("DELETE FROM visiteurs WHERE id=?", (id_visiteur,))
     db.commit()
-    return name
+    return nameF
 
 
 def delete_all():
