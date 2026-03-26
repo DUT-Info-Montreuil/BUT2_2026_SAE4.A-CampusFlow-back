@@ -91,6 +91,5 @@ def fichier_csv():
         writer.writeheader()
         visiteurs = appelle_visiteurs()
         for visiteur in visiteurs:
-            visiteur
             writer.writerow(dict(visiteur))
     csvfile.close()
