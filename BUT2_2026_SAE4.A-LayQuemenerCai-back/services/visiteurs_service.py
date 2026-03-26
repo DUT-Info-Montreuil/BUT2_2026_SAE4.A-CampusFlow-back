@@ -1,3 +1,4 @@
+import csv
 from database import get_db
 from dtos.CreerVisiteursDTO import VisiteurCreerDTO, BacDTO, LyceeDTO, AdresseDTO, OptionsDTO, FormationActuelleDTO
 from dtos.GetVisiteursDTO import VisiteurShortDictDTO, VisiteurLongDictDTO
@@ -70,3 +71,19 @@ def delete_all():
     cursor2 = db.execute("DELETE FROM sqlite_sequence where name=?", ('visiteurs',))
     db.commit()
     return cursor.rowcount
+
+
+def trier_visiteurs(donnee: dict):
+    visiteurs = list(db.visiteurs.find(donnee, {"_id": 1, "nom": 1, "prenom": 1}))  # affichage à modifier
+    return visiteurs
+
+def fichier_csv(donnee: dict):
+    with open('temporaire/visiteurs.csv', 'w', newline='') as csvfile:
+        fieldnames = ["_id", "nom", "prenom"]  # permet de mettre les attribut en haut du fichier csv
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        writer.writeheader()
+        visiteurs = trier_visiteurs(donnee)
+        for visiteur in visiteurs:
+            writer.writerow(visiteur)
+    csvfile.close()
