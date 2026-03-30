@@ -6,7 +6,55 @@ visiteurs_controller = Blueprint('visiteurs', __name__, url_prefix='/visiteurs')
 
 @visiteurs_controller.route('', methods=['GET'])
 def get_visiteurs():
-    visiteurs = service_visiteurs.get_all()
+    nom = request.args.get('nom')
+    prenom = request.args.get('prenom')
+    telephone = request.args.get('telephone')
+    email = request.args.get('email')
+    ville = request.args.get('ville')
+    bac = request.args.get('bac')
+    lycee = request.args.get('lycee')
+    reorientation = request.args.get('reorientation')
+    immersion = request.args.get('immersion')
+    handicap = request.args.get('handicap')
+    formation_actuelle = request.args.get('formation_actuelle')
+
+    filtres = dict()
+    if nom:
+        filtres['nom'] = nom
+    if prenom:
+        filtres['prenom'] = prenom
+    if telephone:
+        filtres['telephone'] = telephone
+    if email:
+        filtres['email'] = email
+    if lycee:
+        filtres['nom_lycee'] = lycee
+    if ville:
+        filtres['ville'] = ville
+    if bac:
+        filtres['bac_intitule'] = bac
+    if reorientation:
+        if reorientation.lower() == 'true':
+            filtres['reorientation'] = 1
+        else:
+            filtres['reorientation'] = 0
+    if handicap:
+        if handicap.lower() == 'true':
+            filtres['handicap'] = 1
+        else:
+            filtres['handicap'] = 0
+    if immersion:
+        if handicap.lower() == 'true':
+            filtres['immersion'] = 1
+        else:
+            filtres['immersion'] = 0
+    if formation_actuelle:
+        filtres['formation_actuelle_intitule'] = formation_actuelle
+
+    if filtres:
+        visiteurs = service_visiteurs.get_all(filtres)
+    else:
+        visiteurs = service_visiteurs.get_all()
     return jsonify(visiteurs), 200
 
 
@@ -54,3 +102,10 @@ def modif_visiteurs(id_visiteur: int):
         return jsonify("Visiteur modifié"), 201
     except Exception as exception:
         return jsonify(f"{exception}"), 404
+
+@visiteurs_controller.route('/export', methods=['GET'])
+def export_visiteurs():
+    if not exists("temporaire"):
+        os.mkdir("temporaire")
+    service_visiteurs.fichier_csv()
+    return send_file("temporaire/visiteurs.csv",mimetype="text/csv"),200
