@@ -10,6 +10,8 @@ visiteurs_controller = Blueprint('visiteurs', __name__, url_prefix='/visiteurs')
 @visiteurs_controller.route('', methods=['GET'])
 def get_visiteurs():
     visiteurs = service_visiteurs.get_all()
+    if visiteurs is None:
+        return jsonify("Visiteurs introuvables"), 404
     return jsonify(visiteurs), 200
 
 
