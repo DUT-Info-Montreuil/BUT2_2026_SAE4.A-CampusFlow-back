@@ -15,8 +15,10 @@ def get_visiteurs():
     email = request.args.get('email')
     ville = request.args.get('ville')
     bac = request.args.get('bac')
+    lycee = request.args.get('lycee')
     reorientation = request.args.get('reorientation')
     immersion = request.args.get('immersion')
+    handicap = request.args.get('handicap')
     formation_actuelle = request.args.get('formation_actuelle')
 
     filtres = dict()
@@ -28,14 +30,27 @@ def get_visiteurs():
         filtres['telephone'] = telephone
     if email:
         filtres['email'] = email
+    if lycee:
+        filtres['nom_lycee'] = lycee
     if ville:
         filtres['ville'] = ville
     if bac:
         filtres['bac_intitule'] = bac
     if reorientation:
-        filtres['reorientation'] = reorientation
+        if reorientation.lower() == 'true':
+            filtres['reorientation'] = 1
+        else:
+            filtres['reorientation'] = 0
+    if handicap:
+        if handicap.lower() == 'true':
+            filtres['handicap'] = 1
+        else:
+            filtres['handicap'] = 0
     if immersion:
-        filtres['immersion'] = immersion
+        if handicap.lower() == 'true':
+            filtres['immersion'] = 1
+        else:
+            filtres['immersion'] = 0
     if formation_actuelle:
         filtres['formation_actuelle_intitule'] = formation_actuelle
 

@@ -10,7 +10,7 @@ def get_all(filtres=None):
     result = []
     if filtres is None:
         for visiteur in visiteurs:
-            result.append(to_short_dto(visiteur))
+            result.append(to_long_dto(visiteur))
     else:
         for visiteur in visiteurs:
             condition_vraie = True
@@ -19,7 +19,7 @@ def get_all(filtres=None):
                     condition_vraie = False
                     break
             if condition_vraie:
-                result.append(to_short_dto(visiteur))
+                result.append(to_long_dto(visiteur))
     return result
 
 
