@@ -200,3 +200,5 @@ def fichier_csv():
         for visiteur in visiteurs:
             writer.writerow(dict(visiteur))
     csvfile.close()
+
+
