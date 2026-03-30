@@ -9,7 +9,40 @@ visiteurs_controller = Blueprint('visiteurs', __name__, url_prefix='/visiteurs')
 
 @visiteurs_controller.route('', methods=['GET'])
 def get_visiteurs():
-    visiteurs = service_visiteurs.get_all()
+    nom = request.args.get('nom')
+    prenom = request.args.get('prenom')
+    telephone = request.args.get('telephone')
+    email = request.args.get('email')
+    ville = request.args.get('ville')
+    bac = request.args.get('bac')
+    reorientation = request.args.get('reorientation')
+    immersion = request.args.get('immersion')
+    formation_actuelle = request.args.get('formation_actuelle')
+
+    filtres = dict()
+    if nom:
+        filtres['nom'] = nom
+    if prenom:
+        filtres['prenom'] = prenom
+    if telephone:
+        filtres['telephone'] = telephone
+    if email:
+        filtres['email'] = email
+    if ville:
+        filtres['ville'] = ville
+    if bac:
+        filtres['bac_intitule'] = bac
+    if reorientation:
+        filtres['reorientation'] = reorientation
+    if immersion:
+        filtres['immersion'] = immersion
+    if formation_actuelle:
+        filtres['formation_actuelle_intitule'] = formation_actuelle
+
+    if filtres:
+        visiteurs = service_visiteurs.get_all(filtres)
+    else:
+        visiteurs = service_visiteurs.get_all()
     return jsonify(visiteurs), 200
 
 
