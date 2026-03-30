@@ -53,7 +53,7 @@ def mapper_options_to_front(visiteur):
         handicap=bool(visiteur["handicap"]),
         reorientation=bool(visiteur["reorientation"]),
         immersion=bool(visiteur["immersion"])
-    )
+    ).model_dump()
 
 
 """
