@@ -39,10 +39,9 @@ def delete_visiteurs():
     else:
         return jsonify("Suppression des visiteurs échoué"), 404
 
-@visiteurs_controller.route('/export', methods=['POST']) #verifier si utiliser post
+@visiteurs_controller.route('/export', methods=['GET'])
 def export_visiteurs():
     if not exists("temporaire"):
         os.mkdir("temporaire")
-    data = request.get_json()
-    service_visiteurs.fichier_csv(data)
+    service_visiteurs.fichier_csv()
     return send_file("temporaire/visiteurs.csv",mimetype="text/csv"),200

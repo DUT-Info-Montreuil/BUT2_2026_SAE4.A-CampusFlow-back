@@ -71,17 +71,23 @@ def delete_all():
     return cursor.rowcount
 
 
-def trier_visiteurs(donnee: dict):
-    visiteurs = list(db.visiteurs.find(donnee, {"_id": 1, "nom": 1, "prenom": 1}))  # affichage à modifier
+def appelle_visiteurs():
+    db = get_db()
+    cursor = db.execute("SELECT * FROM visiteurs")
+    visiteurs = cursor.fetchall()
     return visiteurs
 
-def fichier_csv(donnee: dict):
+
+def fichier_csv():
+    db = get_db()
+    cursor = db.execute("PRAGMA table_info(visiteurs)")
+    attribut = [a["name"] for a in cursor.fetchall()]  # recupérer les attribut de la table visiteurs
     with open('temporaire/visiteurs.csv', 'w', newline='') as csvfile:
-        fieldnames = ["_id", "nom", "prenom"]  # permet de mettre les attribut en haut du fichier csv
+        fieldnames = attribut  # permet de mettre les attribut en haut du fichier csv
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
         writer.writeheader()
-        visiteurs = trier_visiteurs(donnee)
+        visiteurs = appelle_visiteurs()
         for visiteur in visiteurs:
-            writer.writerow(visiteur)
+            writer.writerow(dict(visiteur))
     csvfile.close()
