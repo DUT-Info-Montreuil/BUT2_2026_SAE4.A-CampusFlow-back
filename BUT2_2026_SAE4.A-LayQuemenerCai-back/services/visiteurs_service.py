@@ -3,13 +3,23 @@ from database import get_db
 from mappers.visiteurs_mapper import to_short_dto, to_long_dto, to_visiteur_creer_dto
 
 
-def get_all():
+def get_all(filtres=None):
     db = get_db()
     cursor = db.execute("SELECT * FROM visiteurs")
     visiteurs = cursor.fetchall()
     result = []
-    for visiteur in visiteurs:
-        result.append(to_short_dto(visiteur))
+    if filtres is None:
+        for visiteur in visiteurs:
+            result.append(to_long_dto(visiteur))
+    else:
+        for visiteur in visiteurs:
+            condition_vraie = True
+            for cle, valeur in filtres.items():
+                if visiteur[cle] != valeur:
+                    condition_vraie = False
+                    break
+            if condition_vraie:
+                result.append(to_long_dto(visiteur))
     return result
 
 
@@ -66,7 +76,7 @@ def add_visiteur(data: dict):
 def delete_all():
     db = get_db()
     cursor = db.execute("DELETE FROM visiteurs")
-    cursor2 = db.execute("DELETE FROM sqlite_sequence where name=?", ('visiteurs',)) # Reset l'id à 0
+    cursor2 = db.execute("DELETE FROM sqlite_sequence where name=?", ('visiteurs',))  # Reset l'id à 0
     db.commit()
     return cursor.rowcount
 
