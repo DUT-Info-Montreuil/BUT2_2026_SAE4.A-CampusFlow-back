@@ -8,7 +8,7 @@ def mapper_adresse_to_front(evenement) -> dict:
     }
 
 
-def to_evenement_creer_dto(data: dict) -> EvenementDTO:
+def to_evenement_creer_DTO(data: dict) -> EvenementDTO:
     return EvenementDTO(
         intitule=data['intitule'],
         data=data['date'],
@@ -19,8 +19,18 @@ def to_evenement_creer_dto(data: dict) -> EvenementDTO:
     )
 
 
-def to_formation_creer_dto(data: dict) -> FormationDTO:
+def to_formation_creer_DTO(data: dict) -> FormationDTO:
     return FormationDTO(
         intitule=data['intitule'],
         domaine=data['domaine']
     )
+
+
+def to_short_dto(visiteur) -> dict:
+    return VisiteurShortDictDTO(
+        id=visiteur["id"],
+        nom=visiteur["nom"],
+        prenom=visiteur["prenom"],
+        bac=mapper_bac_to_front(visiteur),
+        adresse=mapper_adresse_to_front(visiteur)
+    ).model_dump(exclude_none=True)

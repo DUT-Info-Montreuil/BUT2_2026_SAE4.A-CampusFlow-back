@@ -1,5 +1,5 @@
 from pydantic import BaseModel, field_validator, Field
-from CreerVisiteursDTO import *
+from dtos.CreerVisiteursDTO import *
 
 
 class VisiteurShortDictDTO(BaseModel):  # Utilisé pour l'endpoint GET /visiteurs
