@@ -157,7 +157,10 @@ def modif_visiteur(id_visiteur: int, data: dict):
             reorientation= ?,
             immersion= ?,
         WHERE id=?;
-    """, (visiteur.nom, visiteur.prenom, visiteur.email, visiteur.telephone, str(visiteur.date_naissance), visiteur.adresse.ville, visiteur.adresse.codePostal, visiteur.lycee.nom_lycee, visiteur.lycee.codePostal,visiteur.bac.intitule, visiteur.bac.annee, visiteur.bac.matiere1, visiteur.bac.matiere2, formation_intitule, formation_niveau, handicap, reorientation, immersion, id_visiteur,))
+    """, (visiteur.nom, visiteur.prenom, visiteur.email, visiteur.telephone, str(visiteur.date_naissance),
+          visiteur.adresse.ville, visiteur.adresse.codePostal, visiteur.lycee.nom_lycee, visiteur.lycee.codePostal,
+          visiteur.bac.intitule, visiteur.bac.annee, visiteur.bac.matiere1, visiteur.bac.matiere2, formation_intitule,
+          formation_niveau, handicap, reorientation, immersion, id_visiteur,))
     db.commit()
 
 
@@ -180,14 +183,25 @@ def delete_all():
     return cursor.rowcount
 
 
-def appelle_visiteurs():
+def appelle_visiteurs(filtre=None):
     db = get_db()
-    cursor = db.execute("SELECT * FROM visiteurs")
+    if filtre:
+        cursor = db.execute(
+            "SELECT * FROM visiteurs WHERE (nom = :nom OR :nom IS NULL) AND (prenom = :prenom OR :prenom IS NULL) "
+            "AND (email = :email OR :email IS NULL) AND (ville = :ville OR :ville IS NULL) AND (bac_intitule = :bac_intitule OR :bac_intitule IS NULL) "
+            "AND (nom_lycee = :nom_lycee OR :nom_lycee IS NULL) AND (reorientation = :reorientation OR :reorientation IS NULL) "
+            "AND (immersion = :immersion OR :immersion IS NULL) AND (handicap = :handicap OR :handicap IS NULL) "
+            "AND (formation_actuelle_intitule = :formation_actuelle_intitule OR :formation_actuelle_intitule IS NULL)"
+            "order by nom",
+            filtre)
+
+    else:
+        cursor = db.execute("SELECT * FROM visiteurs")
     visiteurs = cursor.fetchall()
     return visiteurs
 
 
-def fichier_csv():
+def fichier_csv(filtre=None):
     db = get_db()
     cursor = db.execute("PRAGMA table_info(visiteurs)")
     attribut = [a["name"] for a in cursor.fetchall()]  # recupérer les attribut de la table visiteurs
@@ -196,9 +210,7 @@ def fichier_csv():
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
         writer.writeheader()
-        visiteurs = appelle_visiteurs()
+        visiteurs = appelle_visiteurs(filtre)
         for visiteur in visiteurs:
             writer.writerow(dict(visiteur))
     csvfile.close()
-
-
