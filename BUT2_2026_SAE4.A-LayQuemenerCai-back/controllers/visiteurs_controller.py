@@ -45,3 +45,8 @@ def export_visiteurs():
         os.mkdir("temporaire")
     service_visiteurs.fichier_csv()
     return send_file("temporaire/visiteurs.csv",mimetype="text/csv"),200
+
+@visiteurs_controller.route('/stat', methods=['GET'])
+def stat_visiteurs():
+    visiteurs = service_visiteurs.statistique_visiteurs()
+    return jsonify(visiteurs), 200

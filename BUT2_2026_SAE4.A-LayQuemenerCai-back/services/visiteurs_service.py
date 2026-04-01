@@ -66,7 +66,7 @@ def add_visiteur(data: dict):
 def delete_all():
     db = get_db()
     cursor = db.execute("DELETE FROM visiteurs")
-    cursor2 = db.execute("DELETE FROM sqlite_sequence where name=?", ('visiteurs',)) # Reset l'id à 0
+    cursor2 = db.execute("DELETE FROM sqlite_sequence where name=?", ('visiteurs',))  # Reset l'id à 0
     db.commit()
     return cursor.rowcount
 
@@ -91,3 +91,36 @@ def fichier_csv():
         for visiteur in visiteurs:
             writer.writerow(dict(visiteur))
     csvfile.close()
+
+
+def statistique_visiteurs():
+    return {'bac': stat_bac(), 'reorientation': stat_reorientation(), 'immersion': stat_immersion(),
+            'handicap': stat_handicap()}
+
+
+def stat_bac():
+    db = get_db()
+    cursor = db.execute("select bac_intitule,count(*) from visiteurs group by bac_intitule")
+    bac = cursor.fetchall()
+    return dict(bac)
+
+
+def stat_reorientation():
+    db = get_db()
+    cursor = db.execute("select reorientation,count(*) from visiteurs group by reorientation")
+    reorientation = cursor.fetchall()
+    return dict(reorientation)
+
+
+def stat_immersion():
+    db = get_db()
+    cursor = db.execute("select immersion,count(*) from visiteurs group by immersion")
+    immersion = cursor.fetchall()
+    return dict(immersion)
+
+
+def stat_handicap():
+    db = get_db()
+    cursor = db.execute("select handicap,count(*) from visiteurs group by handicap")
+    handicap = cursor.fetchall()
+    return dict(handicap)
