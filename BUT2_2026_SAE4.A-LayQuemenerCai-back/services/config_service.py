@@ -67,6 +67,7 @@ def modif_evenement(id_evenement: int, data: dict):
     ))
     db.commit()
 
+
 def get_formation_all():
     db = get_db()
     cursor = db.execute("SELECT * FROM formations_iut")
