@@ -9,7 +9,7 @@ def get_evenement_all():
     evenement = cursor.fetchall()
     result = []
     for event in evenement:
-        result.append(to_short_dto(event))
+        result.append(to_short_evenement_dto(event))
     return result
 
 
@@ -36,7 +36,7 @@ def delete_evenement_all():
 def delete_evenement_by_id(id_evenement: int):
     db = get_db()
     name = None
-    name = db.execute("SELECT nom FROM evenements WHERE id= ?", (id_evenement,))
+    name = db.execute("SELECT intitule FROM evenements WHERE id= ?", (id_evenement,))
     db.commit()
     nameF = name.fetchone()
     cursor = db.execute("DELETE FROM evenements WHERE id=?", (id_evenement,))
@@ -73,7 +73,7 @@ def get_formation_all():
     formation = cursor.fetchall()
     result = []
     for event in formation:
-        result.append(to_short_dto(event))
+        result.append(to_short_formation_dto(event))
     return result
 
 
@@ -100,7 +100,7 @@ def delete_formation_all():
 def delete_formation_by_id(id_formation: int):
     db = get_db()
     name = None
-    name = db.execute("SELECT nom FROM formations_iut WHERE id= ?", (id_formation,))
+    name = db.execute("SELECT intitule FROM formations_iut WHERE id= ?", (id_formation,))
     db.commit()
     nameF = name.fetchone()
     cursor = db.execute("DELETE FROM formations_iut WHERE id=?", (id_formation,))
