@@ -31,7 +31,7 @@ def to_short_evenement_dto(evenement) -> dict:
         id=evenement["id"],
         intitule=evenement["intitule"],
         date=evenement["date"],
-        adresse=mapper_adresse_to_front(evenement)
+        lieu=mapper_adresse_to_front(evenement)
     ).model_dump(exclude_none=True)
 
 

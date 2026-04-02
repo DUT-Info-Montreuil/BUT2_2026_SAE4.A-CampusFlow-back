@@ -17,10 +17,12 @@ def add_evenement(data: dict):
     db = get_db()
     evenement = to_evenement_creer_DTO(data)
     db.execute("""
-    INSERT INTO evenement (intitule,lieu,date)
-    VALUES (?,?)""",(
+    INSERT INTO evenements (intitule,ville,code_postal,date)
+    VALUES (?,?,?,?)""",(
         evenement.intitule,
-        evenement.lieu
+        evenement.lieu.ville,
+        evenement.lieu.codePostal,
+        evenement.date
     ))
     db.commit()
 
