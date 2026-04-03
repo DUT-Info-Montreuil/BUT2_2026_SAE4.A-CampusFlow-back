@@ -97,3 +97,11 @@ def modif_formation(id_formation: int):
         return jsonify("Evènement modifié"), 201
     except Exception as exception:
         return jsonify(f"{exception}"), 404
+
+
+
+@config_controller.route('/password', methods=['PUT'])
+def modif_password():
+    data = request.get_json()
+    service_config.modif_password(data["password"])
+    return jsonify(),201

@@ -1,5 +1,9 @@
 import csv
+import os
+
 from database import get_db
+from dotenv import set_key
+from flask.cli import load_dotenv
 from mappers.config_mapper import *
 
 
@@ -44,18 +48,18 @@ def delete_evenement_by_id(id_evenement: int):
     return nameF
 
 
-def modif_evenement(id_evenement: int, data: dict):
-    evenement =
-    db = get_db()
-    db.execute("""
-    UPDATE evenement
-    SET intitule= ?,
-        lieu= ?,
-    WHERE id= ?;""",(
-        evenement.intitule,
-        evenement.lieu
-    ))
-    db.commit()
+# def modif_evenement(id_evenement: int, data: dict):
+#     evenement =
+#     db = get_db()
+#     db.execute("""
+#     UPDATE evenement
+#     SET intitule= ?,
+#         lieu= ?,
+#     WHERE id= ?;""",(
+#         evenement.intitule,
+#         evenement.lieu
+#     ))
+#     db.commit()
 
 def get_formation_all():
     db = get_db
@@ -98,15 +102,23 @@ def delete_formation_by_id(id_formation: int):
     return nameF
 
 
-def modif_formation(id_formation: int, data: dict):
-    formation =
-    db = get_db()
-    db.execute("""
-    UPDATE formation
-    SET intitule= ?,
-        lieu= ?,
-    WHERE id= ?;""",(
-        formation.intitule,
-        formation.lieu
-    ))
-    db.commit()
+# def modif_formation(id_formation: int, data: dict):
+#     formation =
+#     db = get_db()
+#     db.execute("""
+#     UPDATE formation
+#     SET intitule= ?,
+#         lieu= ?,
+#     WHERE id= ?;""",(
+#         formation.intitule,
+#         formation.lieu
+#     ))
+#     db.commit()
+
+
+
+def modif_password(data):
+    load_dotenv()
+    set_key(".env","PASSWORD",data)
+    domaine=os.getenv("DOMAIN")
+    return domaine
