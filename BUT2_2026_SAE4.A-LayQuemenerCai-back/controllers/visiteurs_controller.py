@@ -20,6 +20,8 @@ def get_visiteurs():
     immersion = request.args.get('immersion')
     handicap = request.args.get('handicap')
     formation_actuelle = request.args.get('formation_actuelle')
+    limit = request.args.get('limit', default=5, type=int)
+    page = request.args.get('page', default=1, type=int)
 
     filtres = dict()
     if nom:
@@ -55,10 +57,10 @@ def get_visiteurs():
         filtres['formation_actuelle_intitule'] = formation_actuelle
 
     if filtres:
-        visiteurs = service_visiteurs.get_all(filtres)
+        visiteurs = service_visiteurs.get_all(filtres, limit, page)
     else:
-        visiteurs = service_visiteurs.get_all()
-    return jsonify(visiteurs), 200
+        visiteurs = service_visiteurs.get_all(None, limit, page)
+    return jsonify({'data': visiteurs, 'page': page, 'limit': limit}), 200
 
 
 @visiteurs_controller.route('/<int:id>', methods=['GET'])

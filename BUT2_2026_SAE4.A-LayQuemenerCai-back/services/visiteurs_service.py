@@ -3,8 +3,9 @@ from database import get_db
 from mappers.visiteurs_mapper import to_short_dto, to_long_dto, to_visiteur_creer_dto
 
 
-def get_all(filtres=None):
+def get_all(filtres=None, limit=20, page=1):
     db = get_db()
+    debut = (page - 1) * limit
     cursor = db.execute("SELECT * FROM visiteurs")
     visiteurs = cursor.fetchall()
     result = []
@@ -20,6 +21,7 @@ def get_all(filtres=None):
                     break
             if condition_vraie:
                 result.append(to_long_dto(visiteur))
+    result = result[debut: debut + limit]
     return result
 
 
