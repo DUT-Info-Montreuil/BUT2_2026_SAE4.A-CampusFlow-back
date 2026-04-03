@@ -109,3 +109,28 @@ def export_visiteurs():
         os.mkdir("temporaire")
     service_visiteurs.fichier_csv()
     return send_file("temporaire/visiteurs.csv",mimetype="text/csv"),200
+
+@visiteurs_controller.route('/stat', methods=['GET'])
+def stat_visiteurs():
+    visiteurs = service_visiteurs.statistique_visiteurs()
+    return jsonify(visiteurs), 200
+
+@visiteurs_controller.route('/stat/bac', methods=['GET'])
+def stat_bac_visiteurs():
+    visiteurs = service_visiteurs.stat_bac()
+    return jsonify(visiteurs), 200
+
+@visiteurs_controller.route('/stat/handicap', methods=['GET'])
+def stat_handicap_visiteurs():
+    visiteurs = service_visiteurs.stat_handicap()
+    return jsonify(visiteurs), 200
+
+@visiteurs_controller.route('/stat/immersion', methods=['GET'])
+def stat_immersion_visiteurs():
+    visiteurs = service_visiteurs.stat_immersion()
+    return jsonify(visiteurs), 200
+
+@visiteurs_controller.route('/stat/reorientation', methods=['GET'])
+def stat_reorientation_visiteurs():
+    visiteurs = service_visiteurs.stat_reorientation()
+    return jsonify(visiteurs), 200
