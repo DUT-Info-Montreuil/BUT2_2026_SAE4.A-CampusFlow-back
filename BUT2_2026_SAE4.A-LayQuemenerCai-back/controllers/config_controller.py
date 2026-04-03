@@ -66,7 +66,7 @@ def add_formations():
     data = request.get_json()
     try:
         service_config.add_formation(data)
-        return jsonify("Evenement ajouté"), 201
+        return jsonify("Formation ajouté"), 201
     except Exception as exception:
         return jsonify(f"{exception}"), 404
 

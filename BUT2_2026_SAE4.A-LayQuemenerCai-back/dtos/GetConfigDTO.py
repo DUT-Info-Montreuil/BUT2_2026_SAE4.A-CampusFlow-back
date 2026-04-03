@@ -1,5 +1,5 @@
 from pydantic import BaseModel, field_validator, Field
-from CreerConfigDTO import *
+from dtos.CreerConfigDTO import *
 
 
 class EvenenementDictDTO(BaseModel):
