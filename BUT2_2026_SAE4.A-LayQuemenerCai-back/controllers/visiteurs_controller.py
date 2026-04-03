@@ -73,7 +73,7 @@ def add_visiteurs():
         service_visiteurs.add_visiteur(data)
         return jsonify("Visiteur ajouté"), 201
     except Exception as exception:
-        return jsonify(f"{exception}"), 404
+        return jsonify(f"Problème?{exception}"), 404
 
 
 @visiteurs_controller.route('', methods=['DELETE'])
