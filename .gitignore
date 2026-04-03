@@ -1,4 +1,5 @@
 BUT2_2026_SAE4.A-LayQuemenerCai-back/.venv/*
-__pycache__
+__pycache__/
+*.pyc
 .idea
 temporaire
