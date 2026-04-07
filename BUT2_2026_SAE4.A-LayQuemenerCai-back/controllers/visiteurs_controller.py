@@ -1,4 +1,7 @@
-from flask import Blueprint, jsonify, request, Response
+import os
+from os.path import exists
+
+from flask import Blueprint, jsonify, request, Response, send_file
 import services.visiteurs_service as service_visiteurs
 
 visiteurs_controller = Blueprint('visiteurs', __name__, url_prefix='/visiteurs')
@@ -110,8 +113,80 @@ def modif_visiteurs(id_visiteur: int):
 def export_visiteurs():
     if not exists("temporaire"):
         os.mkdir("temporaire")
-    service_visiteurs.fichier_csv()
-    return send_file("temporaire/visiteurs.csv", mimetype="text/csv"), 200
+
+    nom = request.args.get('nom')
+    prenom = request.args.get('prenom')
+    telephone = request.args.get('telephone')
+    email = request.args.get('email')
+    ville = request.args.get('ville')
+    bac = request.args.get('bac')
+    lycee = request.args.get('lycee')
+    reorientation = request.args.get('reorientation')
+    immersion = request.args.get('immersion')
+    handicap = request.args.get('handicap')
+    formation_actuelle = request.args.get('formation_actuelle')
+
+    filtres = dict()
+    if nom:
+        filtres['nom'] = nom
+    else:
+        filtres['nom'] = None
+    if prenom:
+        filtres['prenom'] = prenom
+    else:
+        filtres['prenom'] = None
+    if telephone:
+        filtres['telephone'] = telephone
+    else:
+        filtres['telephone'] = None
+    if email:
+        filtres['email'] = email
+    else:
+        filtres['email'] = None
+    if lycee:
+        filtres['nom_lycee'] = lycee
+    else:
+        filtres['nom_lycee'] = None
+    if ville:
+        filtres['ville'] = ville
+    else:
+        filtres['ville'] = None
+    if bac:
+        filtres['bac_intitule'] = bac
+    else:
+        filtres['bac_intitule'] = None
+    if reorientation:
+        if reorientation.lower() == 'true':
+            filtres['reorientation'] = 1
+        else:
+            filtres['reorientation'] = 0
+    else:
+        filtres['reorientation'] = None
+    if handicap:
+        if handicap.lower() == 'true':
+            filtres['handicap'] = 1
+        else:
+            filtres['handicap'] = 0
+    else:
+        filtres['handicap'] = None
+    if immersion:
+        if immersion.lower() == 'true':
+            filtres['immersion'] = 1
+        else:
+            filtres['immersion'] = 0
+    else:
+        filtres['immersion'] = None
+    if formation_actuelle:
+        filtres['formation_actuelle_intitule'] = formation_actuelle
+    else:
+        filtres['formation_actuelle_intitule'] = None
+
+    if filtres:
+        service_visiteurs.fichier_csv(filtres)
+    else:
+        service_visiteurs.fichier_csv()
+
+    return send_file("temporaire/visiteurs.csv",mimetype="text/csv"),200
 
 
 @visiteurs_controller.route('/stat', methods=['GET'])
