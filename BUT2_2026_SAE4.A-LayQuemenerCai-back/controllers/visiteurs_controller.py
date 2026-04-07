@@ -20,6 +20,8 @@ def get_visiteurs():
     immersion = request.args.get('immersion')
     handicap = request.args.get('handicap')
     formation_actuelle = request.args.get('formation_actuelle')
+    limit = request.args.get('limit', default=5, type=int)
+    page = request.args.get('page', default=1, type=int)
 
     filtres = dict()
     if nom:
@@ -55,10 +57,10 @@ def get_visiteurs():
         filtres['formation_actuelle_intitule'] = formation_actuelle
 
     if filtres:
-        visiteurs = service_visiteurs.get_all(filtres)
+        visiteurs = service_visiteurs.get_all(filtres, limit, page)
     else:
-        visiteurs = service_visiteurs.get_all()
-    return jsonify(visiteurs), 200
+        visiteurs = service_visiteurs.get_all(None, limit, page)
+    return jsonify({'data': visiteurs, 'page': page, 'limit': limit}), 200
 
 
 @visiteurs_controller.route('/<int:id>', methods=['GET'])
@@ -76,7 +78,7 @@ def add_visiteurs():
         service_visiteurs.add_visiteur(data)
         return jsonify("Visiteur ajouté"), 201
     except Exception as exception:
-        return jsonify(f"{exception}"), 404
+        return jsonify(f"Problème?{exception}"), 404
 
 
 @visiteurs_controller.route('', methods=['DELETE'])
@@ -105,6 +107,7 @@ def modif_visiteurs(id_visiteur: int):
         return jsonify("Visiteur modifié"), 201
     except Exception as exception:
         return jsonify(f"{exception}"), 404
+
 
 @visiteurs_controller.route('/export', methods=['GET'])
 def export_visiteurs():
@@ -184,3 +187,33 @@ def export_visiteurs():
         service_visiteurs.fichier_csv()
 
     return send_file("temporaire/visiteurs.csv",mimetype="text/csv"),200
+
+
+@visiteurs_controller.route('/stat', methods=['GET'])
+def stat_visiteurs():
+    visiteurs = service_visiteurs.statistique_visiteurs()
+    return jsonify(visiteurs), 200
+
+
+@visiteurs_controller.route('/stat/bac', methods=['GET'])
+def stat_bac_visiteurs():
+    visiteurs = service_visiteurs.stat_bac()
+    return jsonify(visiteurs), 200
+
+
+@visiteurs_controller.route('/stat/handicap', methods=['GET'])
+def stat_handicap_visiteurs():
+    visiteurs = service_visiteurs.stat_handicap()
+    return jsonify(visiteurs), 200
+
+
+@visiteurs_controller.route('/stat/immersion', methods=['GET'])
+def stat_immersion_visiteurs():
+    visiteurs = service_visiteurs.stat_immersion()
+    return jsonify(visiteurs), 200
+
+
+@visiteurs_controller.route('/stat/reorientation', methods=['GET'])
+def stat_reorientation_visiteurs():
+    visiteurs = service_visiteurs.stat_reorientation()
+    return jsonify(visiteurs), 200

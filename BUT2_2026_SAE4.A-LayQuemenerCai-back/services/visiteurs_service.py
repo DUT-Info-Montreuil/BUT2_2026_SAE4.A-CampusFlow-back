@@ -3,8 +3,9 @@ from database import get_db
 from mappers.visiteurs_mapper import to_short_dto, to_long_dto, to_visiteur_creer_dto
 
 
-def get_all(filtres=None):
+def get_all(filtres=None, limit=20, page=1):
     db = get_db()
+    debut = (page - 1) * limit
     cursor = db.execute("SELECT * FROM visiteurs")
     visiteurs = cursor.fetchall()
     result = []
@@ -20,6 +21,8 @@ def get_all(filtres=None):
                     break
             if condition_vraie:
                 result.append(to_long_dto(visiteur))
+
+    result = result[debut: debut + limit]
     return result
 
 
@@ -214,3 +217,36 @@ def fichier_csv(filtre=None):
         for visiteur in visiteurs:
             writer.writerow(dict(visiteur))
     csvfile.close()
+
+
+def statistique_visiteurs():
+    return {'bac': stat_bac(), 'reorientation': stat_reorientation(), 'immersion': stat_immersion(),
+            'handicap': stat_handicap()}
+
+
+def stat_bac():
+    db = get_db()
+    cursor = db.execute("select bac_intitule,count(*) from visiteurs group by bac_intitule")
+    bac = cursor.fetchall()
+    return dict(bac)
+
+
+def stat_reorientation():
+    db = get_db()
+    cursor = db.execute("select reorientation,count(*) from visiteurs group by reorientation")
+    reorientation = cursor.fetchall()
+    return dict(reorientation)
+
+
+def stat_immersion():
+    db = get_db()
+    cursor = db.execute("select immersion,count(*) from visiteurs group by immersion")
+    immersion = cursor.fetchall()
+    return dict(immersion)
+
+
+def stat_handicap():
+    db = get_db()
+    cursor = db.execute("select handicap,count(*) from visiteurs group by handicap")
+    handicap = cursor.fetchall()
+    return dict(handicap)
