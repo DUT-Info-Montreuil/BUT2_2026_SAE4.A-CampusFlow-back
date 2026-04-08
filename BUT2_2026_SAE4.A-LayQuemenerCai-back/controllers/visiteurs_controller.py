@@ -182,12 +182,9 @@ def export_visiteurs():
     else:
         filtres['formation_actuelle_intitule'] = None
 
-    if filtres:
-        service_visiteurs.fichier_csv(filtres)
-    else:
-        service_visiteurs.fichier_csv()
+    service_visiteurs.fichier_csv(filtres)
 
-    return send_file("temporaire/visiteurs.csv",mimetype="text/csv"),200
+    return send_file("temporaire/visiteurs.csv", mimetype="text/csv"), 200
 
 
 @visiteurs_controller.route('/stat', methods=['GET'])
