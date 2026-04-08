@@ -105,7 +105,9 @@ def to_long_dto(visiteur) -> dict:
         options=mapper_options_to_front(visiteur),
         email=visiteur["email"],
         telephone=visiteur["telephone"],
-        formation_actuelle=mapper_formation_actuelle_to_front(visiteur)
+        formation_actuelle=mapper_formation_actuelle_to_front(visiteur),
+        date_naissance=visiteur["date_de_naissance"]
+
     ).model_dump(exclude_none=True)
 
 

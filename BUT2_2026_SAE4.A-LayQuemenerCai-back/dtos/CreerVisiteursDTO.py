@@ -37,7 +37,7 @@ class FormationViseeDTO(BaseModel):
 class VisiteurCreerDTO(BaseModel):
     nom: str = Field(min_length=2)
     prenom: str = Field(min_length=2)
-    date_naissance: datetime
+    date_naissance: str
     bac: BacDTO
     lycee: LyceeDTO
     adresse: AdresseDTO
