@@ -1,5 +1,6 @@
-import csv
+import os
 from database import get_db
+from flask.cli import load_dotenv
 from mappers.config_mapper import *
 from dtos.CreerConfigDTO import *
 from repository.config_repository import *
@@ -74,3 +75,11 @@ def modif_formation(id_formation: int, data: dict):
         lieu=adresse
     )
     modif_formationRepository(id_formation, formation)
+
+
+def password_ok(password: str):
+    load_dotenv()
+    if password == os.getenv("PASSWORD"):
+        return True
+    return False
+
