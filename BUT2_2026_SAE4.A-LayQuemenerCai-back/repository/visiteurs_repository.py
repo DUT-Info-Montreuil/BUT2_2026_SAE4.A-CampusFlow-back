@@ -13,9 +13,9 @@ def get_visiteurRepository(id_visiteur):
     return cursor.fetchone()
 
 
-def add_visiteurRepository(visiteur, formation_intitule, formation_niveau):
+def add_visiteurRepository(visiteur, formation_intitule, formation_niveau, formation_souhaitee_id, evenement_id):
     db = get_db()
-    db.execute("""
+    cursor = db.execute("""
             INSERT INTO visiteurs (
                 nom, prenom, email, telephone, date_de_naissance, ville, code_postal,
                 nom_lycee, code_postal_lycee, bac_intitule, bac_annee, bac_matiere1, bac_matiere2,
@@ -41,6 +41,15 @@ def add_visiteurRepository(visiteur, formation_intitule, formation_niveau):
         visiteur.options.reorientation,
         visiteur.options.immersion
     ))
+    visiteur_id = cursor.lastrowid
+    db.execute(
+        "INSERT INTO choix_formations_visees (visiteur_id, formation_id) VALUES (?, ?)",
+        (visiteur_id, int(formation_souhaitee_id))
+    )
+    db.execute(
+        "INSERT INTO evenements_participes (visiteur_id, evenement_id) VALUES (?, ?)",
+        (visiteur_id, int(evenement_id))
+    )
     db.commit()
 
 
