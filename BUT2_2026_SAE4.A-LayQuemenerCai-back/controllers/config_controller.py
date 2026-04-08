@@ -99,9 +99,8 @@ def modif_formation(id_formation: int):
         return jsonify(f"{exception}"), 404
 
 
-
-@config_controller.route('/password', methods=['PUT'])
+@config_controller.route('/modif-password', methods=['PUT'])
 def modif_password():
     data = request.get_json()
     service_config.modif_password(data["password"])
-    return jsonify(),201
+    return jsonify(), 200
