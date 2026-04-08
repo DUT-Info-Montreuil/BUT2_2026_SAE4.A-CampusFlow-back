@@ -66,8 +66,9 @@ def delete_formation_by_id(id_formation: int):
     return nameF
 
 def modif_password(data):
-    load_dotenv()
-    set_key(".env","PASSWORD",data)
+    if (data["newPassword"] == data["confPassword"] and password_ok(data["oldPassword"])):
+        load_dotenv()
+        set_key(".env","PASSWORD",data["newPassword"])
     
 def modif_formation(id_formation: int, data: dict):
     adresse = AdresseDTO(

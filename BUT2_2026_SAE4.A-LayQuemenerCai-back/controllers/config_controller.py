@@ -101,7 +101,7 @@ def modif_formation(id_formation: int):
 @config_controller.route('/modif-password', methods=['PUT'])
 def modif_password():
     data = request.get_json()
-    service_config.modif_password(data["password"])
+    service_config.modif_password(data)
     return jsonify(), 200
     
 @config_controller.route('/verif-authentificate', methods=['POST'])
