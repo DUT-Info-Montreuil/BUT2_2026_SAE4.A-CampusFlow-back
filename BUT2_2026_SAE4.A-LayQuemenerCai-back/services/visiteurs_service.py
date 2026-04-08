@@ -121,10 +121,7 @@ def delete_all():
 
 
 def appelle_visiteurs(filtre=None):
-    if filtre:
-        cursor = appelle_visiteurs_filtreRepository(filtre)
-    else:
-        cursor = get_allRepository()
+    cursor = appelle_visiteurs_filtreRepository(filtre)
     visiteurs = cursor
     return visiteurs
 
@@ -132,7 +129,8 @@ def appelle_visiteurs(filtre=None):
 def fichier_csv(filtre=None):
     db = get_db()
     cursor = db.execute("PRAGMA table_info(visiteurs)")
-    attribut = [a["name"] for a in cursor.fetchall()]  # recupérer les attribut de la table visiteurs
+    attribut = [a["name"] for a in cursor.fetchall() if
+                a["name"] != "id"]  # recupérer les attribut de la table visiteurs
     with open('temporaire/visiteurs.csv', 'w', newline='') as csvfile:
         fieldnames = attribut  # permet de mettre les attribut en haut du fichier csv
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -140,7 +138,9 @@ def fichier_csv(filtre=None):
         writer.writeheader()
         visiteurs = appelle_visiteurs(filtre)
         for visiteur in visiteurs:
-            writer.writerow(dict(visiteur))
+            v = dict(visiteur)
+            v.pop("id")
+            writer.writerow(v)
     csvfile.close()
 
 
