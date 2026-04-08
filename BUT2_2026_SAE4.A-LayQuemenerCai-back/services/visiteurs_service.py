@@ -1,13 +1,12 @@
 import csv
 from database import get_db
-from mappers.visiteurs_mapper import to_short_dto, to_long_dto, to_visiteur_creer_dto
+from mappers.visiteurs_mapper import *
+from repository.visiteurs_repository import *
 
 
 def get_all(filtres=None, limit=20, page=1):
-    db = get_db()
     debut = (page - 1) * limit
-    cursor = db.execute("SELECT * FROM visiteurs")
-    visiteurs = cursor.fetchall()
+    visiteurs = get_allRepository()
     result = []
     if filtres is None:
         for visiteur in visiteurs:
@@ -27,9 +26,7 @@ def get_all(filtres=None, limit=20, page=1):
 
 
 def get_visiteur_by_id(visiteur_id: int):
-    db = get_db()
-    cursor = db.execute("SELECT * FROM visiteurs WHERE id=?", (visiteur_id,))
-    visiteur = cursor.fetchone()
+    visiteur = get_visiteurRepository(visiteur_id)
     if not visiteur:
         return None
     else:
@@ -45,35 +42,7 @@ def add_visiteur(data: dict):
     else:
         formation_intitule = None
         formation_niveau = None
-
-    db = get_db()
-    db.execute("""
-        INSERT INTO visiteurs (
-            nom, prenom, email, telephone, date_de_naissance, ville, code_postal,
-            nom_lycee, code_postal_lycee, bac_intitule, bac_annee, bac_matiere1, bac_matiere2,
-            formation_actuelle_intitule, formation_actuelle_niveau, handicap, reorientation, immersion
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (
-        visiteur.nom,
-        visiteur.prenom,
-        visiteur.email,
-        visiteur.telephone,
-        str(visiteur.date_naissance),
-        visiteur.adresse.ville,
-        visiteur.adresse.codePostal,
-        visiteur.lycee.nom_lycee,
-        visiteur.lycee.codePostal,
-        visiteur.bac.intitule,
-        visiteur.bac.annee,
-        visiteur.bac.matiere1,
-        visiteur.bac.matiere2,
-        formation_intitule,
-        formation_niveau,
-        visiteur.options.handicap,
-        visiteur.options.reorientation,
-        visiteur.options.immersion
-    ))
-    db.commit()
+    add_visiteurRepository(visiteur, formation_intitule, formation_niveau)
 
 
 def modif_visiteur(id_visiteur: int, data: dict):
@@ -138,69 +107,25 @@ def modif_visiteur(id_visiteur: int, data: dict):
         reorientation = 0
         immersion = 0
 
-    db = get_db()
-    db.execute("""
-        UPDATE visiteurs
-        SET nom= ?,
-            prenom= ?,
-            email= ?,
-            telephone= ?,
-            date_de_naissance= ?,
-            ville= ?,
-            code_postal= ?,
-            nom_lycee= ?,
-            code_postal_lycee= ?,
-            bac_intitule= ?,
-            bac_annee= ?,
-            bac_matiere1= ?,
-            bac_matiere2= ?,
-            formation_actuelle_intitule= ?,
-            formation_actuelle_niveau= ?,
-            handicap= ?,
-            reorientation= ?,
-            immersion= ?,
-        WHERE id=?;
-    """, (visiteur.nom, visiteur.prenom, visiteur.email, visiteur.telephone, str(visiteur.date_naissance),
-          visiteur.adresse.ville, visiteur.adresse.codePostal, visiteur.lycee.nom_lycee, visiteur.lycee.codePostal,
-          visiteur.bac.intitule, visiteur.bac.annee, visiteur.bac.matiere1, visiteur.bac.matiere2, formation_intitule,
-          formation_niveau, handicap, reorientation, immersion, id_visiteur,))
-    db.commit()
+    update_visiteurRepository(id_visiteur, visiteur, formation_intitule, formation_niveau, handicap, reorientation, immersion)
 
 
 def delete_visiteur_by_id(id_visiteur: int):
-    db = get_db()
-    name = None
-    name = db.execute("SELECT nom FROM visiteurs WHERE id= ?", (id_visiteur,))
-    db.commit()
-    nameF = name.fetchone()
-    cursor = db.execute("DELETE FROM visiteurs WHERE id=?", (id_visiteur,))
-    db.commit()
+    nameF = delete_visiteurRepository(id_visiteur)
     return nameF
 
 
 def delete_all():
-    db = get_db()
-    cursor = db.execute("DELETE FROM visiteurs")
-    cursor2 = db.execute("DELETE FROM sqlite_sequence where name=?", ('visiteurs',))  # Reset l'id à 0
-    db.commit()
+    cursor = delete_allRepository()
     return cursor.rowcount
 
 
 def appelle_visiteurs(filtre=None):
-    db = get_db()
     if filtre:
-        cursor = db.execute(
-            "SELECT * FROM visiteurs WHERE (nom = :nom OR :nom IS NULL) AND (prenom = :prenom OR :prenom IS NULL) "
-            "AND (email = :email OR :email IS NULL) AND (ville = :ville OR :ville IS NULL) AND (bac_intitule = :bac_intitule OR :bac_intitule IS NULL) "
-            "AND (nom_lycee = :nom_lycee OR :nom_lycee IS NULL) AND (reorientation = :reorientation OR :reorientation IS NULL) "
-            "AND (immersion = :immersion OR :immersion IS NULL) AND (handicap = :handicap OR :handicap IS NULL) "
-            "AND (formation_actuelle_intitule = :formation_actuelle_intitule OR :formation_actuelle_intitule IS NULL)"
-            "order by nom",
-            filtre)
-
+        cursor = appelle_visiteurs_filtreRepository(filtre)
     else:
-        cursor = db.execute("SELECT * FROM visiteurs")
-    visiteurs = cursor.fetchall()
+        cursor = get_allRepository()
+    visiteurs = cursor
     return visiteurs
 
 
@@ -225,28 +150,20 @@ def statistique_visiteurs():
 
 
 def stat_bac():
-    db = get_db()
-    cursor = db.execute("select bac_intitule,count(*) from visiteurs group by bac_intitule")
-    bac = cursor.fetchall()
+    bac = stat_bacRepository()
     return dict(bac)
 
 
 def stat_reorientation():
-    db = get_db()
-    cursor = db.execute("select reorientation,count(*) from visiteurs group by reorientation")
-    reorientation = cursor.fetchall()
+    reorientation = stat_reorientationRepository()
     return dict(reorientation)
 
 
 def stat_immersion():
-    db = get_db()
-    cursor = db.execute("select immersion,count(*) from visiteurs group by immersion")
-    immersion = cursor.fetchall()
+    immersion = stat_immersionRepository()
     return dict(immersion)
 
 
 def stat_handicap():
-    db = get_db()
-    cursor = db.execute("select handicap,count(*) from visiteurs group by handicap")
-    handicap = cursor.fetchall()
+    handicap = stat_handicapRepository()
     return dict(handicap)
