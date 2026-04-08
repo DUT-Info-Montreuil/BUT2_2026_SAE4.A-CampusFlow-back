@@ -10,7 +10,7 @@ def get_evenement_allRepository():
 def add_evenementRepository(evenement):
     db = get_db()
     db.execute("""
-        INSERT INTO evenements (intitule,ville,code_postal,date)
+        INSERT INTO evenements (intitule,lieu,code_postal,date)
         VALUES (?,?,?,?)""", (
         evenement.intitule,
         evenement.lieu.ville,
@@ -62,10 +62,9 @@ def get_formation_allRepository():
 def add_formationRepository(formation):
     db = get_db()
     db.execute("""
-        INSERT INTO formations_iut (intitule,domaine)
-        VALUES (?,?)""", (
+        INSERT INTO formations_iut (intitule)
+        VALUES (?)""", (
         formation.intitule,
-        formation.domaine
     ))
     db.commit()
 
@@ -94,10 +93,8 @@ def modif_formationRepository(id_formation, formation):
     db.execute("""
         UPDATE formation
         SET intitule= ?,
-            lieu= ?
         WHERE id= ?;""", (
         formation.intitule,
-        formation.lieu,
         id_formation
     ))
     db.commit()

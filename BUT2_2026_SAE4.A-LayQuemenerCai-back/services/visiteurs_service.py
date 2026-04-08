@@ -43,7 +43,9 @@ def add_visiteur(data: dict):
     else:
         formation_intitule = None
         formation_niveau = None
-    add_visiteurRepository(visiteur, formation_intitule, formation_niveau)
+    formation_souhaitee_id = data.get("formationSouhaite")
+    evenement_id = data.get("evenementSouhaite")
+    add_visiteurRepository(visiteur, formation_intitule, formation_niveau, formation_souhaitee_id, evenement_id)
 
 
 def modif_visiteur(id_visiteur: int, data: dict):

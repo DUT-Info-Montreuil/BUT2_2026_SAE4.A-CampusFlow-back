@@ -1,9 +1,10 @@
 from dtos.CreerConfigDTO import EvenementDTO, FormationDTO, AdresseDTO
+from dtos.GetConfigDTO import *
 
 
 def mapper_adresse_to_front(evenement) -> dict:
     return {
-        "ville": evenement["ville"],
+        "ville": evenement["lieu"],
         "codePostal": evenement["code_postal"]
     }
 
@@ -22,12 +23,11 @@ def to_evenement_creer_DTO(data: dict) -> EvenementDTO:
 def to_formation_creer_DTO(data: dict) -> FormationDTO:
     return FormationDTO(
         intitule=data['intitule'],
-        domaine=data['domaine']
     )
 
 
 def to_short_evenement_dto(evenement) -> dict:
-    return EvenementDTO(
+    return EvenementDictDTO(
         id=evenement["id"],
         intitule=evenement["intitule"],
         date=evenement["date"],
@@ -36,8 +36,7 @@ def to_short_evenement_dto(evenement) -> dict:
 
 
 def to_short_formation_dto(formation) -> dict:
-    return FormationDTO(
+    return FormationDictDTO(
         id=formation["id"],
-        intitule=formation["intitule"],
-        domaine=formation["domaine"],
+        intitule=formation["intitule"]
     ).model_dump(exclude_none=True)

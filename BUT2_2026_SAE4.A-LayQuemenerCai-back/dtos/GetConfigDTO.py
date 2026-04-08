@@ -2,12 +2,13 @@ from pydantic import BaseModel, field_validator, Field
 from dtos.CreerConfigDTO import *
 
 
-class EvenenementDictDTO(BaseModel):
+class EvenementDictDTO(BaseModel):
+    id: int
     intitule: str
     lieu: AdresseDTO
-    data: datetime
+    date: datetime
 
 
 class FormationDictDTO(BaseModel):
+    id: int
     intitule: str
-    domaine: str
