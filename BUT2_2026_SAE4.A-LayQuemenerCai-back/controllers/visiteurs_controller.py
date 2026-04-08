@@ -20,6 +20,7 @@ def get_visiteurs():
     immersion = request.args.get('immersion')
     handicap = request.args.get('handicap')
     formation_actuelle = request.args.get('formation_actuelle')
+    formation_visee = request.args.get('formation_visee')
     limit = request.args.get('limit', default=5, type=int)
     page = request.args.get('page', default=1, type=int)
 
@@ -49,17 +50,16 @@ def get_visiteurs():
         else:
             filtres['handicap'] = 0
     if immersion:
-        if handicap.lower() == 'true':
+        if immersion.lower() == 'true':
             filtres['immersion'] = 1
         else:
             filtres['immersion'] = 0
     if formation_actuelle:
         filtres['formation_actuelle_intitule'] = formation_actuelle
-
     if filtres:
-        visiteurs = service_visiteurs.get_all(filtres, limit, page)
+        visiteurs = service_visiteurs.get_all(filtres, formation_visee, limit, page)
     else:
-        visiteurs = service_visiteurs.get_all(None, limit, page)
+        visiteurs = service_visiteurs.get_all(None, None, limit, page)
     return jsonify({'data': visiteurs, 'page': page, 'limit': limit}), 200
 
 

@@ -1,9 +1,17 @@
 from database import get_db
 
 
-def get_allRepository():
+def get_allRepository(formation_visee=None):
     db = get_db()
-    cursor = db.execute("SELECT * FROM visiteurs")
+    if formation_visee:
+        cursor = db.execute("""
+                SELECT v.* FROM visiteurs v
+                INNER JOIN choix_formations_visees cfv ON cfv.visiteur_id = v.id
+                INNER JOIN formations_iut f ON f.id = cfv.formation_id
+                WHERE f.intitule = ?
+            """, (formation_visee,))
+    else:
+        cursor = db.execute("SELECT * FROM visiteurs")
     return cursor.fetchall()
 
 
