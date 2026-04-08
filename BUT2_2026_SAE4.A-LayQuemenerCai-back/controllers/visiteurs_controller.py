@@ -128,6 +128,7 @@ def export_visiteurs():
     formation_actuelle = request.args.get('formation_actuelle')
 
     filtres = dict()
+
     if nom:
         filtres['nom'] = nom
     else:
@@ -160,21 +161,21 @@ def export_visiteurs():
         if reorientation.lower() == 'true':
             filtres['reorientation'] = 1
         else:
-            filtres['reorientation'] = 0
+            filtres['reorientation'] = None
     else:
         filtres['reorientation'] = None
     if handicap:
         if handicap.lower() == 'true':
             filtres['handicap'] = 1
         else:
-            filtres['handicap'] = 0
+            filtres['handicap'] = None
     else:
         filtres['handicap'] = None
     if immersion:
         if immersion.lower() == 'true':
             filtres['immersion'] = 1
         else:
-            filtres['immersion'] = 0
+            filtres['immersion'] = None
     else:
         filtres['immersion'] = None
     if formation_actuelle:
@@ -182,12 +183,9 @@ def export_visiteurs():
     else:
         filtres['formation_actuelle_intitule'] = None
 
-    if filtres:
-        service_visiteurs.fichier_csv(filtres)
-    else:
-        service_visiteurs.fichier_csv()
+    service_visiteurs.fichier_csv(filtres)
 
-    return send_file("temporaire/visiteurs.csv",mimetype="text/csv"),200
+    return send_file("temporaire/visiteurs.csv", mimetype="text/csv"), 200
 
 
 @visiteurs_controller.route('/stat', methods=['GET'])

@@ -9,6 +9,7 @@ CORS(app)
 app.register_blueprint(visiteurs_controller)
 app.register_blueprint(config_controller)
 
+
 @app.route('/')
 def hello_world():
     return 'CampusFlow'
