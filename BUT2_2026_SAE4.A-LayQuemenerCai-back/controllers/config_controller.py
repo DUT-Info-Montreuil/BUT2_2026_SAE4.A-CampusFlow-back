@@ -1,11 +1,11 @@
-from flask import Blueprint, jsonify, request, send_file
+from flask import Blueprint, jsonify, request
 import services.config_service as service_config
 from Token import Token
 
 config_controller = Blueprint('config', __name__, url_prefix='/config')
 
 
-@config_controller.route('/evenement',methods=["GET"])
+@config_controller.route('/evenement', methods=["GET"])
 def get_evenements():
     data = service_config.get_evenement_all()
     if data is None:
@@ -51,7 +51,7 @@ def modif_evenement(id_evenement: int):
         return jsonify(f"{exception}"), 404
 
 
-@config_controller.route('/formation',methods=["GET"])
+@config_controller.route('/formation', methods=["GET"])
 def get_formations():
     data = service_config.get_formation_all()
     if data is None:
@@ -101,13 +101,21 @@ def modif_formation(id_formation: int):
 def verif_authentificate():
     token = request.get_json()["token"]
     if Token.token_ok(token):
-        return jsonify(),200
-    return jsonify(),403
+        return jsonify(), 200
+    return jsonify(), 400
+
 
 @config_controller.route('/authentificate', methods=['POST'])
 def authenticate():
     password = request.get_json()["password"]
     if service_config.password_ok(password):
         token = Token()
-        return jsonify({"token":token.get_token()}),200
+        return jsonify({"token": token.get_token()}), 200
+    return jsonify(), 400
 
+
+@config_controller.route('/logout', methods=['POST'])
+def logout():
+    token = request.get_json()["token"]
+    Token.sup_token(token)
+    return jsonify(), 200
