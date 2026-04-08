@@ -14,6 +14,7 @@ class VisiteurLongDictDTO(BaseModel):  # Utilisé pour l'endpoint GET /visiteurs
     id: int
     nom: str
     prenom: str
+    date_naissance: str
     bac: BacDTO
     lycee: LyceeDTO
     adresse: AdresseDTO

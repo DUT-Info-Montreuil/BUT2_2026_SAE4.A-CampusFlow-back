@@ -1,12 +1,13 @@
 import csv
 from database import get_db
-from mappers.visiteurs_mapper import to_short_dto, to_long_dto, to_visiteur_creer_dto
+from dtos.CreerVisiteursDTO import *
+from mappers.visiteurs_mapper import *
+from repository.visiteurs_repository import *
 
 
-def get_all(filtres=None):
-    db = get_db()
-    cursor = db.execute("SELECT * FROM visiteurs")
-    visiteurs = cursor.fetchall()
+def get_all(filtres=None, formation_visee=None, limit=20, page=1):
+    debut = (page - 1) * limit
+    visiteurs = get_allRepository(formation_visee)
     result = []
     if filtres is None:
         for visiteur in visiteurs:
@@ -20,13 +21,13 @@ def get_all(filtres=None):
                     break
             if condition_vraie:
                 result.append(to_long_dto(visiteur))
+
+    result = result[debut: debut + limit]
     return result
 
 
 def get_visiteur_by_id(visiteur_id: int):
-    db = get_db()
-    cursor = db.execute("SELECT * FROM visiteurs WHERE id=?", (visiteur_id,))
-    visiteur = cursor.fetchone()
+    visiteur = get_visiteurRepository(visiteur_id)
     if not visiteur:
         return None
     else:
@@ -42,43 +43,17 @@ def add_visiteur(data: dict):
     else:
         formation_intitule = None
         formation_niveau = None
-
-    db = get_db()
-    db.execute("""
-        INSERT INTO visiteurs (
-            nom, prenom, email, telephone, date_de_naissance, ville, code_postal,
-            nom_lycee, code_postal_lycee, bac_intitule, bac_annee, bac_matiere1, bac_matiere2,
-            formation_actuelle_intitule, formation_actuelle_niveau, handicap, reorientation, immersion
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (
-        visiteur.nom,
-        visiteur.prenom,
-        visiteur.email,
-        visiteur.telephone,
-        str(visiteur.date_naissance),
-        visiteur.adresse.ville,
-        visiteur.adresse.codePostal,
-        visiteur.lycee.nom_lycee,
-        visiteur.lycee.codePostal,
-        visiteur.bac.intitule,
-        visiteur.bac.annee,
-        visiteur.bac.matiere1,
-        visiteur.bac.matiere2,
-        formation_intitule,
-        formation_niveau,
-        visiteur.options.handicap,
-        visiteur.options.reorientation,
-        visiteur.options.immersion
-    ))
-    db.commit()
+    formation_souhaitee_id = data.get("formationSouhaite")
+    evenement_id = data.get("evenementSouhaite")
+    add_visiteurRepository(visiteur, formation_intitule, formation_niveau, formation_souhaitee_id, evenement_id)
 
 
 def modif_visiteur(id_visiteur: int, data: dict):
     bac = BacDTO(
         intitule=data["bac_intitule"],
         annee=int(data["bac_annee"]),
-        matiere1=data.get("bac_matiere1"),
-        matiere2=data.get("bac_matiere2")
+        matiere1=data.get("matiere1"),
+        matiere2=data.get("matiere2")
     )
 
     adresse = AdresseDTO(
@@ -87,19 +62,13 @@ def modif_visiteur(id_visiteur: int, data: dict):
     )
 
     options = None
-    if "handicap" in data or "reorientation" in data or "immersion" in data:
+    if "handicap" in data or "immersion" in data:
         options = OptionsDTO(
-            handicap=data.get("handicap"),
-            reorientation=data.get("reorientation"),
-            immersion=data.get("immersion")
+            handicap=bool(data["handicap"]),
+            immersion=bool(data["immersion"])
         )
 
     formation_actuelle = None
-    if "formation_actuelle_intitule" in data and "formation_actuelle_niveau" in data:
-        formation_actuelle = FormationActuelleDTO(
-            intitule=data["formation_actuelle_intitule"],
-            niveau_etudes=data["formation_actuelle_niveau"]
-        )
 
     lycee = LyceeDTO(
         nom_lycee=data["nom_lycee"],
@@ -113,8 +82,8 @@ def modif_visiteur(id_visiteur: int, data: dict):
         bac=bac,
         lycee=lycee,
         adresse=adresse,
-        email=data.get("email"),
-        telephone=data.get("telephone"),
+        email=data["email"],
+        telephone=data["telephone"],
         options=options,
         formation_actuelle=formation_actuelle
     )
@@ -127,78 +96,69 @@ def modif_visiteur(id_visiteur: int, data: dict):
         formation_niveau = None
 
     if visiteur.options:
-        handicap = int(visiteur.options.handicap)
-        reorientation = int(visiteur.options.reorientation)
-        immersion = int(visiteur.options.immersion)
+        handicap = bool(data.get("handicap", False))
+        immersion = bool(data.get("immersion", False))
     else:
         handicap = 0
-        reorientation = 0
         immersion = 0
 
-    db = get_db()
-    db.execute("""
-        UPDATE visiteurs
-        SET nom= ?,
-            prenom= ?,
-            email= ?,
-            telephone= ?,
-            date_de_naissance= ?,
-            ville= ?,
-            code_postal= ?,
-            nom_lycee= ?,
-            code_postal_lycee= ?,
-            bac_intitule= ?,
-            bac_annee= ?,
-            bac_matiere1= ?,
-            bac_matiere2= ?,
-            formation_actuelle_intitule= ?,
-            formation_actuelle_niveau= ?,
-            handicap= ?,
-            reorientation= ?,
-            immersion= ?,
-        WHERE id=?;
-    """, (visiteur.nom, visiteur.prenom, visiteur.email, visiteur.telephone, str(visiteur.date_naissance), visiteur.adresse.ville, visiteur.adresse.codePostal, visiteur.lycee.nom_lycee, visiteur.lycee.codePostal,visiteur.bac.intitule, visiteur.bac.annee, visiteur.bac.matiere1, visiteur.bac.matiere2, formation_intitule, formation_niveau, handicap, reorientation, immersion, id_visiteur,))
-    db.commit()
+    update_visiteurRepository(id_visiteur, visiteur, formation_intitule, formation_niveau, handicap, immersion)
 
 
 def delete_visiteur_by_id(id_visiteur: int):
-    db = get_db()
-    name = None
-    name = db.execute("SELECT nom FROM visiteurs WHERE id= ?", (id_visiteur,))
-    db.commit()
-    nameF = name.fetchone()
-    cursor = db.execute("DELETE FROM visiteurs WHERE id=?", (id_visiteur,))
-    db.commit()
+    nameF = delete_visiteurRepository(id_visiteur)
     return nameF
 
 
 def delete_all():
-    db = get_db()
-    cursor = db.execute("DELETE FROM visiteurs")
-    cursor2 = db.execute("DELETE FROM sqlite_sequence where name=?", ('visiteurs',))  # Reset l'id à 0
-    db.commit()
+    cursor = delete_allRepository()
     return cursor.rowcount
 
 
-def appelle_visiteurs():
-    db = get_db()
-    cursor = db.execute("SELECT * FROM visiteurs")
-    visiteurs = cursor.fetchall()
+def appelle_visiteurs(filtre=None):
+    cursor = appelle_visiteurs_filtreRepository(filtre)
+    visiteurs = cursor
     return visiteurs
 
 
-def fichier_csv():
+def fichier_csv(filtre=None):
     db = get_db()
     cursor = db.execute("PRAGMA table_info(visiteurs)")
-    attribut = [a["name"] for a in cursor.fetchall()]  # recupérer les attribut de la table visiteurs
+    attribut = [a["name"] for a in cursor.fetchall() if
+                a["name"] != "id"]  # recupérer les attribut de la table visiteurs
     with open('temporaire/visiteurs.csv', 'w', newline='') as csvfile:
         fieldnames = attribut  # permet de mettre les attribut en haut du fichier csv
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
         writer.writeheader()
-        visiteurs = appelle_visiteurs()
+        visiteurs = appelle_visiteurs(filtre)
         for visiteur in visiteurs:
-            writer.writerow(dict(visiteur))
+            v = dict(visiteur)
+            v.pop("id")
+            writer.writerow(v)
     csvfile.close()
 
 
+def statistique_visiteurs():
+    return {'bac': stat_bac(), 'reorientation': stat_reorientation(), 'immersion': stat_immersion(),
+            'handicap': stat_handicap()}
+
+
+def stat_bac():
+    bac = stat_bacRepository()
+    return dict(bac)
+
+
+def stat_reorientation():
+    reorientation = stat_reorientationRepository()
+    return dict(reorientation)
+
+
+def stat_immersion():
+    immersion = stat_immersionRepository()
+    return dict(immersion)
+
+
+def stat_handicap():
+    handicap = stat_handicapRepository()
+    return dict(handicap)

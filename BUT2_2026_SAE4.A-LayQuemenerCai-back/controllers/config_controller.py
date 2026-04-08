@@ -1,15 +1,14 @@
-import os
-from genericpath import exists
-
-from flask import Blueprint, jsonify, request, send_file
+from flask import Blueprint, jsonify, request
 import services.config_service as service_config
+from Token import Token
 
 config_controller = Blueprint('config', __name__, url_prefix='/config')
 
 
-@config_controller.route('/evenement',methods=["GET"])
+@config_controller.route('/evenement', methods=["GET"])
 def get_evenements():
     data = service_config.get_evenement_all()
+    print(data)
     if data is None:
         return jsonify('Evenements introuvable'), 404
     return jsonify(data), 200
@@ -53,7 +52,7 @@ def modif_evenement(id_evenement: int):
         return jsonify(f"{exception}"), 404
 
 
-@config_controller.route('/formation',methods=["GET"])
+@config_controller.route('/formation', methods=["GET"])
 def get_formations():
     data = service_config.get_formation_all()
     if data is None:
@@ -66,7 +65,7 @@ def add_formations():
     data = request.get_json()
     try:
         service_config.add_formation(data)
-        return jsonify("Evenement ajouté"), 201
+        return jsonify("Formation ajouté"), 201
     except Exception as exception:
         return jsonify(f"{exception}"), 404
 
@@ -103,4 +102,27 @@ def modif_formation(id_formation: int):
 def modif_password():
     data = request.get_json()
     service_config.modif_password(data["password"])
+    return jsonify(), 200
+    
+@config_controller.route('/verif-authentificate', methods=['POST'])
+def verif_authentificate():
+    token = request.get_json()["token"]
+    if Token.token_ok(token):
+        return jsonify(), 200
+    return jsonify(), 400
+
+
+@config_controller.route('/authentificate', methods=['POST'])
+def authenticate():
+    password = request.get_json()["password"]
+    if service_config.password_ok(password):
+        token = Token()
+        return jsonify({"token": token.get_token()}), 200
+    return jsonify(), 400
+
+
+@config_controller.route('/logout', methods=['POST'])
+def logout():
+    token = request.get_json()["token"]
+    Token.sup_token(token)
     return jsonify(), 200

@@ -10,9 +10,8 @@ class AdresseDTO(BaseModel):
 class EvenementDTO(BaseModel):
     intitule: str = Field(min_length=2)
     lieu: AdresseDTO
-    data: datetime
+    date: datetime
 
 
 class FormationDTO(BaseModel):
     intitule: str = Field(min_length=2)
-    domaine: str = Field(min_length=2)
