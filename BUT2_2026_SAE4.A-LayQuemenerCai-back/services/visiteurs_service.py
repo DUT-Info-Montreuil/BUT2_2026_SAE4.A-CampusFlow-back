@@ -5,9 +5,9 @@ from mappers.visiteurs_mapper import *
 from repository.visiteurs_repository import *
 
 
-def get_all(filtres=None, limit=20, page=1):
+def get_all(filtres=None, formation_visee=None, limit=20, page=1):
     debut = (page - 1) * limit
-    visiteurs = get_allRepository()
+    visiteurs = get_allRepository(formation_visee)
     result = []
     if filtres is None:
         for visiteur in visiteurs:
