@@ -1,5 +1,6 @@
 import csv
 from database import get_db
+from dtos.CreerVisiteursDTO import *
 from mappers.visiteurs_mapper import *
 from repository.visiteurs_repository import *
 
@@ -49,8 +50,8 @@ def modif_visiteur(id_visiteur: int, data: dict):
     bac = BacDTO(
         intitule=data["bac_intitule"],
         annee=int(data["bac_annee"]),
-        matiere1=data.get("bac_matiere1"),
-        matiere2=data.get("bac_matiere2")
+        matiere1=data.get("matiere1"),
+        matiere2=data.get("matiere2")
     )
 
     adresse = AdresseDTO(
@@ -59,19 +60,13 @@ def modif_visiteur(id_visiteur: int, data: dict):
     )
 
     options = None
-    if "handicap" in data or "reorientation" in data or "immersion" in data:
+    if "handicap" in data or "immersion" in data:
         options = OptionsDTO(
-            handicap=data.get("handicap"),
-            reorientation=data.get("reorientation"),
-            immersion=data.get("immersion")
+            handicap=bool(data["handicap"]),
+            immersion=bool(data["immersion"])
         )
 
     formation_actuelle = None
-    if "formation_actuelle_intitule" in data and "formation_actuelle_niveau" in data:
-        formation_actuelle = FormationActuelleDTO(
-            intitule=data["formation_actuelle_intitule"],
-            niveau_etudes=data["formation_actuelle_niveau"]
-        )
 
     lycee = LyceeDTO(
         nom_lycee=data["nom_lycee"],
@@ -85,8 +80,8 @@ def modif_visiteur(id_visiteur: int, data: dict):
         bac=bac,
         lycee=lycee,
         adresse=adresse,
-        email=data.get("email"),
-        telephone=data.get("telephone"),
+        email=data["email"],
+        telephone=data["telephone"],
         options=options,
         formation_actuelle=formation_actuelle
     )
@@ -99,15 +94,13 @@ def modif_visiteur(id_visiteur: int, data: dict):
         formation_niveau = None
 
     if visiteur.options:
-        handicap = int(visiteur.options.handicap)
-        reorientation = int(visiteur.options.reorientation)
-        immersion = int(visiteur.options.immersion)
+        handicap = bool(data.get("handicap", False))
+        immersion = bool(data.get("immersion", False))
     else:
         handicap = 0
-        reorientation = 0
         immersion = 0
 
-    update_visiteurRepository(id_visiteur, visiteur, formation_intitule, formation_niveau, handicap, reorientation, immersion)
+    update_visiteurRepository(id_visiteur, visiteur, formation_intitule, formation_niveau, handicap, immersion)
 
 
 def delete_visiteur_by_id(id_visiteur: int):
