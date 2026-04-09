@@ -8,7 +8,6 @@ config_controller = Blueprint('config', __name__, url_prefix='/config')
 @config_controller.route('/evenement', methods=["GET"])
 def get_evenements():
     data = service_config.get_evenement_all()
-    print(data)
     if data is None:
         return jsonify('Evenements introuvable'), 404
     return jsonify(data), 200
@@ -21,7 +20,7 @@ def add_evenements():
         service_config.add_evenement(data)
         return jsonify("Evènement ajouté"), 201
     except Exception as exception:
-        return jsonify(f"{exception}"), 404
+        return jsonify(f"{exception}"), 400
 
 
 @config_controller.route('/evenement', methods=['DELETE'])

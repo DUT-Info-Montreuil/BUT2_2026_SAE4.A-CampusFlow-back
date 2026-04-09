@@ -78,7 +78,6 @@ def add_visiteurs():
         service_visiteurs.add_visiteur(data)
         return jsonify("Visiteur ajouté"), 201
     except Exception as exception:
-        print(exception)
         return jsonify(f"Problème?{exception}"), 404
 
 
@@ -107,7 +106,6 @@ def modif_visiteurs(id_visiteur: int):
         service_visiteurs.modif_visiteur(id_visiteur, data)
         return jsonify("Visiteur modifié"), 201
     except Exception as exception:
-        print("Erreur:",exception)
         return jsonify(f"{exception}"), 400
 
 
