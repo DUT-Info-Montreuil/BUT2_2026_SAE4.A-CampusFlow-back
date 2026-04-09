@@ -97,6 +97,12 @@ def modif_formation(id_formation: int):
         return jsonify(f"{exception}"), 404
 
 
+@config_controller.route('/modif-password', methods=['PUT'])
+def modif_password():
+    data = request.get_json()
+    service_config.modif_password(data)
+    return jsonify(), 200
+    
 @config_controller.route('/verif-authentificate', methods=['POST'])
 def verif_authentificate():
     token = request.get_json()["token"]
