@@ -186,6 +186,14 @@ def export_visiteurs():
 
     return send_file("temporaire/visiteurs.csv", mimetype="text/csv"), 200
 
+@visiteurs_controller.route('/export/email', methods=['GET'])
+def export_email():
+    if not exists("temporaire"):
+        os.mkdir("temporaire")
+
+    service_visiteurs.fichier_csv_email()
+    return send_file("temporaire/email.csv", mimetype="text/csv"), 200
+
 
 @visiteurs_controller.route('/stat', methods=['GET'])
 def stat_visiteurs():
