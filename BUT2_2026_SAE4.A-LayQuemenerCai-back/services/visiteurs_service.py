@@ -138,6 +138,22 @@ def fichier_csv(filtre=None):
             writer.writerow(v)
     csvfile.close()
 
+def appelle_email():
+    cursor = appelle_visiteurs_emailRepository()
+    visiteurs = cursor
+    return visiteurs
+
+def fichier_csv_email():
+    with open('temporaire/email.csv', 'w', newline='') as csvfile:
+        fieldnames = ["email"]  # permet de mettre les attribut en haut du fichier csv
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        writer.writeheader()
+        emails = appelle_email()
+        for email in emails:
+            writer.writerow(dict(email))
+    csvfile.close()
+
 
 def statistique_visiteurs():
     return {'bac': stat_bac(), 'reorientation': stat_reorientation(), 'immersion': stat_immersion(),

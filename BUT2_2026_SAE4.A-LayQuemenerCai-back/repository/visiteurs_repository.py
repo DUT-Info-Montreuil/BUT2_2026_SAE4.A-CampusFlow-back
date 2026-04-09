@@ -116,6 +116,12 @@ def appelle_visiteurs_filtreRepository(filtre):
         filtre)
     return cursor.fetchall()
 
+def appelle_visiteurs_emailRepository():
+    db = get_db()
+    cursor = db.execute("SELECT email FROM visiteurs;")
+    return cursor.fetchall()
+
+
 
 def delete_allRepository():
     db = get_db()
