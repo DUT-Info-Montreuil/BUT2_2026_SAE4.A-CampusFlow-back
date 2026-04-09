@@ -1,3 +1,1 @@
-Jean-Christophe Lay
-Nicolas Quemener 
-Luc Cai
+Jean-Christophe Lay, Nicolas Quemener, Luc Cai
