@@ -83,7 +83,7 @@ def modif_formation(id_formation: int, data: dict):
 
 
 def password_ok(password: str):
-    load_dotenv()
+    load_dotenv(override=True)
     if password == os.getenv("PASSWORD"):
         return True
     return False
