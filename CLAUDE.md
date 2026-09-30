@@ -6,10 +6,11 @@ d'événements IUT (portes ouvertes, salons) : fiches visiteurs, événements, f
 export CSV/e-mail. Auteurs : Lay, Quemener, Cai. Le front (Vite) tourne sur `http://localhost:5173`.
 
 ## Stack
-- Python 3 (fichiers `.pyc` 3.11–3.14), **Flask 3** + **flask-cors**, gevent
+- **Python 3.11** (version utilisée ici ; des `.pyc` 3.12 et 3.14 existent aussi)
+- **Flask 3.1.3** + **flask-cors 6.0.2**, gevent 25.9.1
 - **SQLite** via le module `sqlite3` (pas d'ORM), `row_factory = sqlite3.Row`, clés étrangères activées
-- **Pydantic 2** pour la validation des DTO d'entrée
-- `python-dotenv` pour la configuration
+- **Pydantic 2.12.5** pour la validation des DTO d'entrée
+- **python-dotenv 1.2.2** pour la configuration (versions exactes dans `requirements.txt`)
 
 ## Structure
 Tout le code est dans `BUT2_2026_SAE4.A-LayQuemenerCai-back/` :
@@ -26,7 +27,9 @@ Tout le code est dans `BUT2_2026_SAE4.A-LayQuemenerCai-back/` :
 ## Commandes
 Depuis `BUT2_2026_SAE4.A-LayQuemenerCai-back/` :
 ```bash
-python -m venv .venv && source .venv/bin/activate   # .venv est ignoré par git
+python -m venv .venv                # .venv est ignoré par git
+source .venv/bin/activate          # Linux/macOS
+.venv\Scripts\Activate.ps1         # Windows PowerShell (cmd : .venv\Scripts\activate.bat)
 pip install -r requirements.txt
 cp .env.exemple .env      # renseigner PASSWORD, DATABASE (chemin du .db), CORS_ORIGIN
 flask --app app run       # ou: python app.py  (http://127.0.0.1:5000)
@@ -45,3 +48,11 @@ flask --app app run       # ou: python app.py  (http://127.0.0.1:5000)
 - Docstrings en français, placées dans un bloc de texte au-dessus des fonctions des mappers.
 - Configuration uniquement via `.env` (jamais commité) ; `.env.exemple` documente les variables.
 - ⚠️ Des `__pycache__/*.pyc` sont suivis par git malgré tout : ne pas les modifier ni les ajouter.
+
+## Règles de travail
+- Ne jamais committer de secret (`.env`, mots de passe, jetons) ; seul `.env.exemple` est versionné.
+- Créer une branche et une PR par modification.
+- Accompagner tout correctif de sécurité d'un test.
+- Lancer les tests avant d'ouvrir une PR.
+- Expliquer tout changement de dépendance (`requirements.txt`) dans la PR.
+- Répondre en français.
