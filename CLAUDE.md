@@ -27,9 +27,10 @@ Tout le code est dans `BUT2_2026_SAE4.A-LayQuemenerCai-back/` :
 ## Commandes
 Depuis `BUT2_2026_SAE4.A-LayQuemenerCai-back/` :
 ```bash
-python -m venv .venv                # .venv est ignoré par git
-source .venv/bin/activate          # Linux/macOS
-.venv\Scripts\Activate.ps1         # Windows PowerShell (cmd : .venv\Scripts\activate.bat)
+rm -rf .venv && /usr/bin/python3 -m venv .venv   # .venv ignoré par git ; Python système, pas conda
+source .venv/bin/activate                        # Windows : .venv\Scripts\Activate.ps1
+# Si ensurepip échoue (Python conda) : sudo apt install python3-venv, ou utiliser conda :
+# conda create -n campusflow python=3.11 && conda activate campusflow
 pip install -r requirements.txt
 cp .env.exemple .env      # renseigner PASSWORD, DATABASE (chemin du .db), CORS_ORIGIN
 flask --app app run       # ou: python app.py  (http://127.0.0.1:5000)
